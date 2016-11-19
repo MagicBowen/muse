@@ -2,16 +2,16 @@
 
 MUSE_NS_BEGIN
 
-AndFact::AndFact(std::initializer_list<Fact*> facts)
+AndFact::AndFact(std::initializer_list<BaseFact*> facts)
 : facts(facts)
 {
 }
 
-bool AndFact::doSatisfyWith(const Event& event)
+bool AndFact::doComfirm(const Event& event)
 {
     for(auto fact : facts)
     {
-        if(!fact->satisfyWith(event)) return false;
+        if(!fact->confirm(event)) return false;
     }
 
     return true;

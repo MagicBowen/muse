@@ -11,8 +11,8 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 add_subdirectory("src")
 
-if(ENABLE_TEST)
-  add_subdirectory(test)
+if(GTEST_ROOT)
+    add_subdirectory("test")
 endif()
 
 install(DIRECTORY include/muse DESTINATION include)

@@ -6,11 +6,11 @@
 
 MUSE_NS_BEGIN
 
-struct Fact;
+struct BaseFact;
 
 struct ExistValidator : Validator
 {
-    ExistValidator(Fact& fact);
+    ExistValidator(BaseFact& fact);
 
 private:
     OVERRIDE(void start());
@@ -31,7 +31,7 @@ private:
     __HAS_STATE(Stopped);
 
 private:
-    Fact& fact;
+    BaseFact& fact;
     Result result{Result::CONTINUE};
 };
 

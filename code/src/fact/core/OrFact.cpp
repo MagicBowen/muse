@@ -2,16 +2,16 @@
 
 MUSE_NS_BEGIN
 
-OrFact::OrFact(std::initializer_list<Fact*> facts)
+OrFact::OrFact(std::initializer_list<BaseFact*> facts)
 : facts(facts)
 {
 }
 
-bool OrFact::doSatisfyWith(const Event& event)
+bool OrFact::doComfirm(const Event& event)
 {
     for(auto fact : facts)
     {
-        if(fact->satisfyWith(event)) return true;
+        if(fact->confirm(event)) return true;
     }
 
     return false;

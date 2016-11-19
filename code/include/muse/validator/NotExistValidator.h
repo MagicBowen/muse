@@ -8,7 +8,7 @@ MUSE_NS_BEGIN
 
 struct NotExistValidator : NegativeValidator
 {
-    NotExistValidator(Fact& fact);
+    NotExistValidator(BaseFact& fact);
 
 private:
     ExistValidator validator;

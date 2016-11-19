@@ -1,5 +1,5 @@
-#ifndef HA5D3A510_8DBE_4634_B217_17E75FB75DFA
-#define HA5D3A510_8DBE_4634_B217_17E75FB75DFA
+#ifndef H2D3E328D_0E7D_462E_B42D_5F8054156486
+#define H2D3E328D_0E7D_462E_B42D_5F8054156486
 
 #include <muse/base/keywords.h>
 
@@ -9,13 +9,7 @@ struct Event;
 
 DEF_INTERFACE(Fact)
 {
-    bool satisfyWith(const Event&);
-
-private:
-    ABSTRACT(bool doSatisfyWith(const Event&));
-
-private:
-    bool satisfied{false};
+    ABSTRACT(bool confirm(const Event&));
 };
 
 MUSE_NS_END

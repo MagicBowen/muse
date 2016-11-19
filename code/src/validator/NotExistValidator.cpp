@@ -2,7 +2,7 @@
 
 MUSE_NS_BEGIN
 
-NotExistValidator::NotExistValidator(Fact& fact)
+NotExistValidator::NotExistValidator(BaseFact& fact)
 : NegativeValidator(validator)
 , validator(fact)
 {

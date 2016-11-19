@@ -1,5 +1,5 @@
 #include <muse/validator/ExistValidator.h>
-#include <muse/fact/core/Fact.h>
+#include "../../include/muse/fact/core/BaseFact.h"
 #include <muse/event/Event.h>
 #include <muse/base/log.h>
 #include <muse/base/TypeName.h>
@@ -43,7 +43,7 @@ private:
     {
         DBG_LOG("%s deal event[type = %d, value = %f].", nameOf(&THIS.fact), event.type, event.value);
 
-        if(THIS.fact.satisfyWith(event))
+        if(THIS.fact.confirm(event))
         {
             THIS.result = Result::SUCCESS;
             THIS.onStopped();
@@ -61,7 +61,7 @@ __REGISTER_STATE(ExistValidator, Started);
 __REGISTER_STATE(ExistValidator, Stopped);
 
 
-ExistValidator::ExistValidator(Fact& fact)
+ExistValidator::ExistValidator(BaseFact& fact)
 : fact(fact)
 {
     __GOTO_STATE(Waited);
