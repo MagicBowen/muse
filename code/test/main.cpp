@@ -1,6 +1,6 @@
 #include <muse/fact/CollisionFact.h>
-#include <muse/validator/FactValidator.h>
-#include <muse/validator/NotValidator.h>
+#include <muse/validator/ExistValidator.h>
+#include <muse/validator/NotExistValidator.h>
 #include <muse/event/Event.h>
 #include <muse/base/Log.h>
 
@@ -10,8 +10,8 @@ int main(int argc, char** argv)
 {
     Result result;
     CollisionFact fact;
-    FactValidator validator{fact};
-    NotValidator notValiator(validator);
+    ExistValidator validator{fact};
+    NotExistValidator notValiator(fact);
 
     Validator& v = notValiator;
 

@@ -2,7 +2,7 @@
 
 MUSE_NS_BEGIN
 
-Result negtiveOf(Result result)
+Result negativeOf(Result result)
 {
     if(result == Result::CONTINUE) return Result::CONTINUE;
 

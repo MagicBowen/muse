@@ -8,9 +8,9 @@ MUSE_NS_BEGIN
 
 struct Fact;
 
-struct FactValidator : Validator
+struct ExistValidator : Validator
 {
-    FactValidator(Fact& fact);
+    ExistValidator(Fact& fact);
 
 private:
     OVERRIDE(void start());
@@ -32,7 +32,7 @@ private:
 
 private:
     Fact& fact;
-    bool  occurred{false};
+    Result result{Result::CONTINUE};
 };
 
 MUSE_NS_END

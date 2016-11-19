@@ -5,9 +5,9 @@
 
 MUSE_NS_BEGIN
 
-struct NotValidator : Validator
+struct NegativeValidator : Validator
 {
-    NotValidator(Validator&);
+    NegativeValidator(Validator&);
 
 private:
     OVERRIDE(void start());

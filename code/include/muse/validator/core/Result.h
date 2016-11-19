@@ -12,7 +12,7 @@ enum class Result
     FAILED
 };
 
-Result negtiveOf(Result result);
+Result negativeOf(Result result);
 
 MUSE_NS_END
 
