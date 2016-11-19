@@ -9,7 +9,13 @@ struct Event;
 
 DEF_INTERFACE(Fact)
 {
-    ABSTRACT(bool occurred(const Event&));
+    bool satisfyWith(const Event&);
+
+private:
+    ABSTRACT(bool doSatisfyWith(const Event&));
+
+private:
+    bool satisfied{false};
 };
 
 MUSE_NS_END

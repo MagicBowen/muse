@@ -3,7 +3,7 @@
 
 MUSE_NS_BEGIN
 
-bool CollisionFact::occurred(const Event& event)
+bool CollisionFact::doSatisfyWith(const Event& event)
 {
     return (event.type == COLLISION);
 }

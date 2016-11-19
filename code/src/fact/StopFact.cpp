@@ -3,7 +3,7 @@
 
 MUSE_NS_BEGIN
 
-bool StopFact::occurred(const Event& event)
+bool StopFact::doSatisfyWith(const Event& event)
 {
     if(event.type != SPEED) return false;
 

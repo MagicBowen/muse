@@ -1,5 +1,5 @@
 #include <muse/validator/FactValidator.h>
-#include <muse/fact/Fact.h>
+#include <muse/fact/core/Fact.h>
 #include <muse/event/Event.h>
 #include <muse/base/log.h>
 #include <muse/base/TypeName.h>
@@ -41,8 +41,8 @@ private:
 
     OVERRIDE(void onEvent(FactValidator& THIS, const Event& event))
     {
-        INFO_LOG("%s deal event[type = %d, value = %d].", nameOf(&THIS.fact), event.type, event.value);
-        THIS.occurred = THIS.fact.occurred(event);
+        DBG_LOG("%s deal event[type = %d, value = %f].", nameOf(&THIS.fact), event.type, event.value);
+        THIS.occurred = THIS.fact.satisfyWith(event);
 
         if(THIS.occurred)
         {
@@ -111,7 +111,7 @@ void FactValidator::onSuccess()
 
 void FactValidator::onFailed()
 {
-    INFO_LOG("%s is Failed!", nameOf(this));
+    ERR_LOG("%s is Failed!", nameOf(this));
 }
 
 MUSE_NS_END

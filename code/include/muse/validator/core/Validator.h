@@ -2,7 +2,7 @@
 #define HD5534454_10D7_4542_8E62_D2F84DDCBAA5
 
 #include <muse/base/keywords.h>
-#include "Result.h"
+#include <muse/validator/core/Result.h>
 
 MUSE_NS_BEGIN
 

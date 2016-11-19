@@ -8,7 +8,7 @@ WithinDistanceFact::WithinDistanceFact(double range)
 {
 }
 
-bool WithinDistanceFact::occurred(const Event& event)
+bool WithinDistanceFact::doSatisfyWith(const Event& event)
 {
     if(event.type != DISTANCE) return false;
 

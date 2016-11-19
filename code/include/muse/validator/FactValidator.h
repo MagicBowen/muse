@@ -1,7 +1,7 @@
 #ifndef H746F98DF_64A2_4180_B583_A428C8D6F374
 #define H746F98DF_64A2_4180_B583_A428C8D6F374
 
-#include <muse/validator/Validator.h>
+#include <muse/validator/core/Validator.h>
 #include <muse/base/State.h>
 
 MUSE_NS_BEGIN
