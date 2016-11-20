@@ -23,6 +23,7 @@ private:
 
 MUSE_NS_END
 
+//////////////////////////////////////////////////////
 #define BASE_FACT(FACT)  FACT##Base
 
 #define DEF_FACT(FACT)                      \
