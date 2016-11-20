@@ -7,7 +7,7 @@ MUSE_NS_BEGIN
 
 struct BaseFact : Fact
 {
-    bool confirm(const Event&);
+    OVERRIDE(bool confirm(const Event&));
 
 private:
     ABSTRACT(bool doComfirm(const Event&));

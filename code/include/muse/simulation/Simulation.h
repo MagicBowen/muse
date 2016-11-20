@@ -5,12 +5,13 @@
 
 MUSE_NS_BEGIN
 
-struct Validator;
+struct Promise;
 struct Event;
 
 struct Simulation
 {
-    Simulation(Validator&);
+    void setPromise(Promise&);
+    void setDuration(unsigned int seconds);
     void play();
     bool isSuccess() const;
 
@@ -24,7 +25,7 @@ private:
 private:
     unsigned int durationSeconds{10};
     unsigned int elaspedSeconds{0};
-    Validator& validator;
+    Promise * promise{nullptr};
     bool result{false};
 };
 

@@ -1,17 +1,31 @@
 #include <muse/simulation/Simulation.h>
-#include <muse/validator/core/Validator.h>
+#include <muse/promise/Promise.h>
 #include <muse/event/EventQueue.h>
+#include <muse/event/Event.h>
+#include <muse/base/log.h>
 
 MUSE_NS_BEGIN
 
-Simulation::Simulation(Validator& validator)
-: validator(validator)
+void Simulation::setPromise(Promise& promise)
 {
+    this->promise = &promise;
+}
+
+void Simulation::setDuration(unsigned int seconds)
+{
+    this->durationSeconds = seconds;
 }
 
 void Simulation::play()
 {
-    validator.start();
+    if(!promise)
+    {
+        ERR_LOG("should set the promise to simulation first!");
+        return;
+    }
+
+    INFO_LOG("Simulation play...")
+    promise->start();
     proceed();
 }
 
@@ -29,6 +43,7 @@ void Simulation::proceed()
 {
     while(auto event = EventQueue::getInstance().fetch())
     {
+        WARN_LOG("simulation fetch event: type = %d, value = %f", event->type, event->value);
         if(!processEvent(*event)) break;
     }
 
@@ -37,17 +52,27 @@ void Simulation::proceed()
 
 void Simulation::terminate()
 {
-    validator.stop();
-    result = (validator.evaluate() == Result::SUCCESS);
+    INFO_LOG("Simulation terminate!")
+    promise->stop();
+    result = (promise->evaluate() == Result::SUCCESS);
 }
 
 bool Simulation::processEvent(const Event& event)
 {
     updateTime();
-    if(isTimeOut()) return false;
 
-    validator.onEvent(event);
-    if(validator.evaluate() != Result::CONTINUE) return false;
+    if(isTimeOut())
+    {
+        INFO_LOG("Simulation is timeout!");
+        return false;
+    }
+
+    promise->onEvent(event);
+    if(promise->evaluate() != Result::UNKNOWN)
+    {
+        INFO_LOG("Simulation is finish!");
+        return false;
+    }
 
     return true;
 }

@@ -7,14 +7,19 @@ MUSE_NS_BEGIN
 
 enum EventType
 {
+    NOTHING,
     COLLISION,
     DISTANCE,
-    SPEED,
-    NOTHING
+    SPEED
 };
 
 struct Event
 {
+    Event(EventType type, double value = 0)
+    : type(type), value(value)
+    {
+    }
+
     EventType type;
     double value;
 };

@@ -11,6 +11,7 @@ DEF_SINGLETON(EventQueue)
 {
     const Event* fetch();
     void push(const Event&);
+    void clear();
 };
 
 MUSE_NS_END

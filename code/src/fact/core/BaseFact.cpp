@@ -6,7 +6,8 @@ bool BaseFact::confirm(const Event& event)
 {
     if(occurred) return true;
 
-    return doComfirm(event);
+    occurred = doComfirm(event);
+    return occurred;
 }
 
 MUSE_NS_END

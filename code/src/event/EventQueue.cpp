@@ -6,7 +6,7 @@ MUSE_NS_BEGIN
 
 namespace
 {
-    std::list<Event> events;
+    std::list<const Event*> events;
 }
 
 const Event* EventQueue::fetch()
@@ -16,12 +16,17 @@ const Event* EventQueue::fetch()
     const auto& event = events.front();
     events.pop_front();
 
-    return &event;
+    return event;
 }
 
 void EventQueue::push(const Event& event)
 {
-    events.push_back(event);
+    events.push_back(&event);
+}
+
+void EventQueue::clear()
+{
+    events.clear();
 }
 
 MUSE_NS_END
