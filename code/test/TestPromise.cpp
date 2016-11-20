@@ -6,8 +6,8 @@
 #include <muse/promise/NotExistPromise.h>
 #include <muse/promise/SequentialPromise.h>
 #include <muse/promise/ConcurrentPromise.h>
-#include <muse/fact/core/AllOfFact.h>
-#include <muse/fact/core/AnyOfFact.h>
+#include <muse/fact/core/AllFact.h>
+#include <muse/fact/core/AnyFact.h>
 #include <muse/fact/CollisionFact.h>
 #include <muse/fact/DistanceLessFact.h>
 #include <muse/fact/StopFact.h>

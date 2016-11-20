@@ -1,4 +1,4 @@
-#include <muse/fact/core/AnyOfFact.h>
+#include <muse/fact/core/AnyFact.h>
 #include <muse/base/Algorithm.h>
 
 MUSE_NS_BEGIN

@@ -21,7 +21,7 @@ namespace details
    {
        static T* value()
        {
-           return 0;
+           return nullptr;
        }
    };
 
@@ -30,7 +30,7 @@ namespace details
    {
        static T* value()
        {
-           return 0;
+           return nullptr;
        }
    };
 
