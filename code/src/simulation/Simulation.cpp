@@ -43,7 +43,6 @@ void Simulation::proceed()
 {
     while(auto event = EventQueue::getInstance().fetch())
     {
-        WARN_LOG("simulation fetch event: type = %d, value = %f", event->type, event->value);
         if(!processEvent(*event)) break;
     }
 

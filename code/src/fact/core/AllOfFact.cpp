@@ -1,5 +1,5 @@
 #include <muse/fact/core/AllOfFact.h>
-#include <algorithm>
+#include <muse/base/Algorithm.h>
 
 MUSE_NS_BEGIN
 
@@ -10,7 +10,7 @@ AllOfFact::AllOfFact(std::initializer_list<Fact*> facts)
 
 bool AllOfFact::doComfirm(const Event& event)
 {
-    return std::all_of(std::begin(facts), std::end(facts), [&event](Fact* fact){return fact->confirm(event);});
+    return allof(facts, [&event](Fact* f){return f->confirm(event);});
 }
 
 MUSE_NS_END

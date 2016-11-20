@@ -5,7 +5,7 @@
 
 MUSE_NS_BEGIN
 
-struct StopFact : BaseFact
+DEF_FACT(StopFact)
 {
 private:
     OVERRIDE(bool doComfirm(const Event&));

@@ -24,6 +24,7 @@ private:
     void onCurrentFailed();
     void onCurrentSuccess();
     bool isFinish() const;
+    bool atLast() const;
     bool gotoNext();
     Promise& current();
 

@@ -7,7 +7,7 @@
 
 MUSE_NS_BEGIN
 
-struct AnyOfFact : BaseFact
+DEF_FACT(AnyOfFact)
 {
     AnyOfFact(std::initializer_list<Fact*>);
 

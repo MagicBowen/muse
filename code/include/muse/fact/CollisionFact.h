@@ -5,7 +5,7 @@
 
 MUSE_NS_BEGIN
 
-struct CollisionFact : BaseFact
+DEF_FACT(CollisionFact)
 {
 private:
     OVERRIDE(bool doComfirm(const Event&));

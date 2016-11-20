@@ -1,5 +1,5 @@
 #include <muse/promise/SequentialPromise.h>
-#include <muse/base/Log.h>
+#include <muse/base/Algorithm.h>
 
 MUSE_NS_BEGIN
 
@@ -24,16 +24,14 @@ void SequentialPromise::stop()
     if(isFinish()) return;
 
     doStop();
+
+    result = atLast() ?  current().evaluate() : Result::FAILED;
+
 }
 
 void SequentialPromise::doStop()
 {
-    for(auto promise : promises)
-    {
-        promise->stop();
-    }
-
-    result = Result::FAILED;
+    foreach(promises, [](Promise* p){ p-> stop(); });
 }
 
 void SequentialPromise::onEvent(const Event& event)
@@ -55,9 +53,9 @@ void SequentialPromise::processEvent(const Event& event)
 
     switch(current().evaluate())
     {
-        case Result::UNKNOWN:   /* need do nothing*/    return;
-        case Result::FAILED:    onCurrentFailed();      return;
-        case Result::SUCCESS:   onCurrentSuccess();     return;
+        case Result::UNKNOWN: /* need do nothing */ return;
+        case Result::FAILED:  onCurrentFailed();    return;
+        case Result::SUCCESS: onCurrentSuccess();   return;
     }
 
     return;
@@ -66,6 +64,8 @@ void SequentialPromise::processEvent(const Event& event)
 void SequentialPromise::onCurrentFailed()
 {
     doStop();
+
+    result = Result::FAILED;
 }
 
 void SequentialPromise::onCurrentSuccess()
@@ -82,6 +82,11 @@ void SequentialPromise::onCurrentSuccess()
 bool SequentialPromise::isFinish() const
 {
     return currentPromise == promises.end();
+}
+
+bool SequentialPromise::atLast() const
+{
+    return *currentPromise == *promises.rbegin();
 }
 
 bool SequentialPromise::gotoNext()

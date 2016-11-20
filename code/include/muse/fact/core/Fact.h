@@ -9,6 +9,7 @@ struct Event;
 
 DEF_INTERFACE(Fact)
 {
+    ABSTRACT(const char* name() const);
     ABSTRACT(bool confirm(const Event&));
 };
 

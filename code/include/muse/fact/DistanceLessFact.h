@@ -5,7 +5,7 @@
 
 MUSE_NS_BEGIN
 
-struct DistanceLessFact : BaseFact
+DEF_FACT(DistanceLessFact)
 {
     DistanceLessFact(double range);
 

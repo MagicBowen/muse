@@ -18,4 +18,17 @@ private:
 
 MUSE_NS_END
 
+#define BASE_FACT(FACT)  FACT##Base
+
+#define DEF_FACT(FACT)                      \
+struct BASE_FACT(FACT) : BaseFact           \
+{                                           \
+private:                                    \
+    OVERRIDE(const char* name() const)      \
+    {                                       \
+        return #FACT;                       \
+    }                                       \
+};                                          \
+struct FACT : BASE_FACT(FACT)
+
 #endif
