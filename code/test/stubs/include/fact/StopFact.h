@@ -1,14 +1,14 @@
 #ifndef HDF4A852D_0DF7_4BA7_BEB4_42CCA922EC88
 #define HDF4A852D_0DF7_4BA7_BEB4_42CCA922EC88
 
-#include <muse/fact/core/BaseFact.h>
+#include <stubs/include/fact/FakeFact.h>
 
 MUSE_NS_BEGIN
 
-DEF_FACT(StopFact)
+DEF_FACT_BASE_OF(StopFact, FakeFact)
 {
 private:
-    OVERRIDE(bool doComfirm(const Event&));
+    OVERRIDE(bool handleEvent(const FakeEvent&));
 };
 
 

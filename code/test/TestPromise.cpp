@@ -1,33 +1,25 @@
 #include <gtest/gtest.h>
-#include <stubs/include/EventGenerator.h>
-#include <muse/event/Event.h>
-#include <muse/simulation/Simulation.h>
+#include <stubs/include/event/EventGenerator.h>
+#include <stubs/include/simulation/Simulation.h>
 #include <muse/promise/ExistPromise.h>
 #include <muse/promise/NotExistPromise.h>
 #include <muse/promise/SequentialPromise.h>
 #include <muse/promise/ConcurrentPromise.h>
-#include <muse/fact/core/AllFact.h>
-#include <muse/fact/core/AnyFact.h>
-#include <muse/fact/CollisionFact.h>
-#include <muse/fact/DistanceLessFact.h>
-#include <muse/fact/StopFact.h>
-#include <muse/fact/DurationFact.h>
+#include <muse/fact/AllFact.h>
+#include <muse/fact/AnyFact.h>
+#include <stubs/include/fact/CollisionFact.h>
+#include <stubs/include/fact/DistanceLessFact.h>
+#include <stubs/include/fact/StopFact.h>
+#include <stubs/include/fact/DurationFact.h>
+#include <stubs/include/event/FakeEvent.h>
 
 USING_MUSE_NS;
 
 struct TestPromise : testing::Test
 {
-    void prepareEvent(EventType type, double value = 0)
+    void prepareEvents(std::initializer_list<FakeEvent> events)
     {
-        generator.generate(type, value);
-    }
-
-    void prepareEvents(std::initializer_list<Event> events)
-    {
-        for(auto event : events)
-        {
-            prepareEvent(event.type, event.value);
-        }
+        generator.generate(events);
     }
 
     bool verify(Promise& promise, unsigned int durationSeconds = 100)
@@ -39,13 +31,13 @@ struct TestPromise : testing::Test
     }
 
 protected:
-    Simulation simulation;
     EventGenerator generator;
+    Simulation simulation{generator};
 };
 
 TEST_F(TestPromise, should_promise_success_when_fact_is_confirmed)
 {
-    prepareEvent(COLLISION);
+    prepareEvents({E_COLLISION()});
 
     CollisionFact fact;
     ExistPromise promise(fact);
@@ -55,7 +47,7 @@ TEST_F(TestPromise, should_promise_success_when_fact_is_confirmed)
 
 TEST_F(TestPromise, should_promise_fail_when_fact_is_not_confirmed)
 {
-    prepareEvent(NOTHING);
+    prepareEvents({E_NOTHING()});
 
     CollisionFact fact;
     NotExistPromise promise(fact);
@@ -65,7 +57,7 @@ TEST_F(TestPromise, should_promise_fail_when_fact_is_not_confirmed)
 
 TEST_F(TestPromise, should_promise_success_when_all_of_fact_is_confirmed)
 {
-    prepareEvents({Event(COLLISION, 0), Event(NOTHING), Event(DISTANCE, 5)});
+    prepareEvents({E_COLLISION(), E_NOTHING(), E_DISTANCE(5)});
 
     CollisionFact collision;
     DistanceLessFact distance(10);
@@ -77,7 +69,7 @@ TEST_F(TestPromise, should_promise_success_when_all_of_fact_is_confirmed)
 
 TEST_F(TestPromise, should_promise_success_when_one_of_fact_is_confirmed)
 {
-    prepareEvents({Event(NOTHING), Event(DISTANCE, 5), Event(COLLISION)});
+    prepareEvents({E_NOTHING(), E_DISTANCE(5), E_COLLISION()});
 
     CollisionFact collision;
     DistanceLessFact distance(10);
@@ -89,7 +81,7 @@ TEST_F(TestPromise, should_promise_success_when_one_of_fact_is_confirmed)
 
 TEST_F(TestPromise, should_fail_when_timeout)
 {
-    prepareEvents({Event(NOTHING), Event(DISTANCE, 5), Event(COLLISION)});
+    prepareEvents({E_NOTHING(), E_DISTANCE(5), E_COLLISION()});
 
     CollisionFact fact;
     ExistPromise promise(fact);
@@ -99,7 +91,7 @@ TEST_F(TestPromise, should_fail_when_timeout)
 
 TEST_F(TestPromise, should_sequential_promise_success_when_all_promise_success)
 {
-    prepareEvents({Event(SPEED, 5), Event(DISTANCE, 5), Event(SPEED, 0), Event(DISTANCE, 4)});
+    prepareEvents({E_SPEED(5), E_DISTANCE(5), E_SPEED(0), E_DISTANCE(4)});
 
     StopFact stop;
     DistanceLessFact distance(5);
@@ -114,7 +106,7 @@ TEST_F(TestPromise, should_sequential_promise_success_when_all_promise_success)
 
 TEST_F(TestPromise, should_sequential_promise_fail_when_one_of_promise_fail)
 {
-    prepareEvents({Event(SPEED, 5), Event(DISTANCE, 5), Event(SPEED, 0), Event(DISTANCE, 5)});
+    prepareEvents({E_SPEED(5), E_DISTANCE(5), E_SPEED(0), E_DISTANCE(5)});
 
     StopFact stop;
     DistanceLessFact distance(5);
@@ -129,7 +121,7 @@ TEST_F(TestPromise, should_sequential_promise_fail_when_one_of_promise_fail)
 
 TEST_F(TestPromise, should_not_confirm_event_when_promise_in_sequential_not_started)
 {
-    prepareEvents({Event(SPEED, 5), Event(DISTANCE, 4), Event(SPEED, 0)});
+    prepareEvents({E_SPEED(5), E_DISTANCE(4), E_SPEED(0)});
 
     StopFact stop;
     DistanceLessFact distance(5);
@@ -144,7 +136,7 @@ TEST_F(TestPromise, should_not_confirm_event_when_promise_in_sequential_not_star
 
 TEST_F(TestPromise, should_sequential_promise_fail_when_timeout)
 {
-    prepareEvents({Event(SPEED, 5), Event(SPEED, 0), Event(DISTANCE, 4)});
+    prepareEvents({E_SPEED(5), E_SPEED(0), E_DISTANCE(4)});
 
     StopFact stop;
     DistanceLessFact distance(5);
@@ -159,7 +151,7 @@ TEST_F(TestPromise, should_sequential_promise_fail_when_timeout)
 
 TEST_F(TestPromise, should_sequential_promise_fail_when_the_last_not_exist_promise_not_success)
 {
-    prepareEvents({Event(SPEED, 5), Event(SPEED, 0), Event(COLLISION)});
+    prepareEvents({E_SPEED(5), E_SPEED(0), E_COLLISION()});
 
     StopFact stop;
     CollisionFact collision;
@@ -174,7 +166,7 @@ TEST_F(TestPromise, should_sequential_promise_fail_when_the_last_not_exist_promi
 
 TEST_F(TestPromise, should_sequential_promise_success_when_the_last_not_exist_promise_success)
 {
-    prepareEvents({Event(SPEED, 5), Event(SPEED, 0), Event(NOTHING)});
+    prepareEvents({E_SPEED(5), E_SPEED(0), E_NOTHING()});
 
     StopFact stop;
     CollisionFact collision;
@@ -189,7 +181,7 @@ TEST_F(TestPromise, should_sequential_promise_success_when_the_last_not_exist_pr
 
 TEST_F(TestPromise, should_concurrent_promise_success_when_all_exist_promise_success)
 {
-    prepareEvents({Event(SPEED, 5), Event(SPEED, 0), Event(COLLISION)});
+    prepareEvents({E_SPEED(5), E_SPEED(0), E_COLLISION()});
 
     StopFact stop;
     CollisionFact collision;
@@ -204,7 +196,7 @@ TEST_F(TestPromise, should_concurrent_promise_success_when_all_exist_promise_suc
 
 TEST_F(TestPromise, should_concurrent_promise_fail_when_any_of_exist_promise_fail)
 {
-    prepareEvents({Event(SPEED, 1), Event(COLLISION)});
+    prepareEvents({E_SPEED(1), E_COLLISION()});
 
     StopFact stop;
     CollisionFact collision;
@@ -219,7 +211,7 @@ TEST_F(TestPromise, should_concurrent_promise_fail_when_any_of_exist_promise_fai
 
 TEST_F(TestPromise, should_concurrent_promise_success_when_the_not_exist_promise_success)
 {
-    prepareEvents({Event(SPEED, 0), Event(NOTHING)});
+    prepareEvents({E_SPEED(0), E_NOTHING()});
 
     StopFact stop;
     CollisionFact collision;
@@ -234,11 +226,11 @@ TEST_F(TestPromise, should_concurrent_promise_success_when_the_not_exist_promise
 
 TEST_F(TestPromise, should_composed_promise_success_when_all_promise_success)
 {
-    prepareEvents({Event(DISTANCE, 11),
-                   Event(SPEED, 0),
-                   Event(DISTANCE, 9),
-                   Event(NOTHING),
-                   Event(SPEED, 1)});
+    prepareEvents({E_DISTANCE(11),
+                   E_SPEED(0),
+                   E_DISTANCE(9),
+                   E_NOTHING(),
+                   E_SPEED(1)});
 
     CollisionFact collision;
     NotExistPromise notExistCollision(collision);

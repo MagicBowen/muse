@@ -1,16 +1,16 @@
 #ifndef H106C811B_25AE_4E37_8338_3299DADF6841
 #define H106C811B_25AE_4E37_8338_3299DADF6841
 
-#include <muse/fact/core/BaseFact.h>
+#include <stubs/include/fact/FakeFact.h>
 
 MUSE_NS_BEGIN
 
-DEF_FACT(DurationFact)
+DEF_FACT_BASE_OF(DurationFact, FakeFact)
 {
-    DurationFact(unsigned int maxSeconds);
+    explicit DurationFact(unsigned int maxSeconds);
 
 private:
-    OVERRIDE(bool doComfirm(const Event&));
+    OVERRIDE(bool handleEvent(const FakeEvent&));
 
 private:
     unsigned int maxSeconds;

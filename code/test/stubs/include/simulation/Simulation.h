@@ -5,14 +5,17 @@
 
 MUSE_NS_BEGIN
 
+struct EventFetcher;
 struct Promise;
 struct Event;
 
 struct Simulation
 {
+    Simulation(EventFetcher&);
     void setPromise(Promise&);
     void setDuration(unsigned int seconds);
     void play();
+    void stop();
     bool isSuccess() const;
 
 private:
@@ -25,6 +28,7 @@ private:
 private:
     unsigned int durationSeconds{10};
     unsigned int elaspedSeconds{0};
+    EventFetcher& fetcher;
     Promise * promise{nullptr};
     bool result{false};
 };

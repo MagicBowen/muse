@@ -2,26 +2,36 @@
 
 MUSE_NS_BEGIN
 
-Result negativeOf(Result result)
+Result::Result(Value value)
+: value(value)
 {
-    if(result == Result::UNKNOWN) return Result::UNKNOWN;
-
-    return (result == Result::FAILED) ? Result::SUCCESS : Result::FAILED;
 }
 
-bool isSuccess(Result result)
+Result Result::negative() const
 {
-    return result == Result::SUCCESS;
+    if(value == UNKNOWN) return Result(UNKNOWN);
+
+    return (value == FAILED) ? Result(SUCCESS) : Result(FAILED);
 }
 
-bool isFailed(Result result)
+bool Result::isSuccess() const
 {
-    return result == Result::FAILED;
+    return value == SUCCESS;
 }
 
-bool isFixed(Result result)
+bool Result::isFailed() const
 {
-    return result != Result::UNKNOWN;
+    return value == FAILED;
+}
+
+bool Result::isFixed() const
+{
+    return value != UNKNOWN;
+}
+
+Result::Value Result::getValue() const
+{
+    return value;
 }
 
 MUSE_NS_END

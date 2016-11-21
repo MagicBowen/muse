@@ -5,17 +5,20 @@
 
 MUSE_NS_BEGIN
 
-enum class Result
+struct Result
 {
-    UNKNOWN,
-    SUCCESS,
-    FAILED
-};
+    enum Value{UNKNOWN, SUCCESS, FAILED};
 
-Result negativeOf(Result result);
-bool isSuccess(Result result);
-bool isFailed(Result result);
-bool isFixed(Result result);
+    Result(Value value);
+    Result negative() const;
+    bool isSuccess() const;
+    bool isFailed() const;
+    bool isFixed() const;
+    Value getValue() const;
+
+private:
+    Value value{UNKNOWN};
+};
 
 MUSE_NS_END
 

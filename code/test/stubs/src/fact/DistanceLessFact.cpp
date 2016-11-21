@@ -1,5 +1,5 @@
-#include <muse/fact/DistanceLessFact.h>
-#include <muse/event/Event.h>
+#include <stubs/include/fact/DistanceLessFact.h>
+#include <stubs/include/event/FakeEvent.h>
 
 MUSE_NS_BEGIN
 
@@ -8,7 +8,7 @@ DistanceLessFact::DistanceLessFact(double range)
 {
 }
 
-bool DistanceLessFact::doComfirm(const Event& event)
+bool DistanceLessFact::handleEvent(const FakeEvent& event)
 {
     if(event.type != DISTANCE) return false;
 

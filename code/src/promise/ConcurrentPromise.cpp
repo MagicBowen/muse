@@ -15,7 +15,7 @@ void ConcurrentPromise::start()
 
 void ConcurrentPromise::stop()
 {
-    if(isFixed(result)) return;
+    if(result.isFixed()) return;
 
     foreach(promises, [](Promise* p){ p-> stop(); });
 
@@ -24,7 +24,7 @@ void ConcurrentPromise::stop()
 
 void ConcurrentPromise::onEvent(const Event& event)
 {
-    if(isFixed(result)) return;
+    if(result.isFixed()) return;
 
     foreach(promises, [&event](Promise* p){ p->onEvent(event); });
 
@@ -33,12 +33,12 @@ void ConcurrentPromise::onEvent(const Event& event)
 
 bool ConcurrentPromise::anyFailed() const
 {
-    return anyof(promises, [](Promise* p){ return isFailed(p->evaluate()); });
+    return anyof(promises, [](Promise* p){ return p->evaluate().isFailed(); });
 }
 
 bool ConcurrentPromise::allSuccess() const
 {
-    return allof(promises, [](Promise* p){ return isSuccess(p->evaluate()); });
+    return allof(promises, [](Promise* p){ return p->evaluate().isSuccess(); });
 }
 
 void ConcurrentPromise::updateResult()

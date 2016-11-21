@@ -12,7 +12,7 @@ NotExistPromise::NotExistPromise(Fact& fact)
 
 Result NotExistPromise::evaluate() const
 {
-    return negativeOf(result);;
+    return result.negative();
 }
 
 void NotExistPromise::onSuccess()

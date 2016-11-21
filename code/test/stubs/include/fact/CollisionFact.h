@@ -1,14 +1,14 @@
 #ifndef H27E0CA63_7BAB_42D9_B7A0_B6DE1F309B25
 #define H27E0CA63_7BAB_42D9_B7A0_B6DE1F309B25
 
-#include <muse/fact/core/BaseFact.h>
+#include <stubs/include/fact/FakeFact.h>
 
 MUSE_NS_BEGIN
 
-DEF_FACT(CollisionFact)
+DEF_FACT_BASE_OF(CollisionFact, FakeFact)
 {
 private:
-    OVERRIDE(bool doComfirm(const Event&));
+    OVERRIDE(bool handleEvent(const FakeEvent&));
 };
 
 MUSE_NS_END

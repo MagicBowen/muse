@@ -9,7 +9,7 @@ MUSE_NS_BEGIN
 
 struct SequentialPromise : Promise
 {
-    SequentialPromise(std::initializer_list<Promise*>);
+    explicit SequentialPromise(std::initializer_list<Promise*>);
 
 private:
     OVERRIDE(void start());
@@ -29,9 +29,9 @@ private:
     Promise& current();
 
 private:
-    typedef std::list<Promise*> Promises;
+    using Promises = std::list<Promise*>;
     std::list<Promise*> promises;
-    typename Promises::iterator currentPromise;
+    Promises::iterator currentPromise;
     Result result{Result::UNKNOWN};
 };
 

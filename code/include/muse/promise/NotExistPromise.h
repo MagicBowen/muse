@@ -7,7 +7,7 @@ MUSE_NS_BEGIN
 
 struct NotExistPromise : FactPromise
 {
-    NotExistPromise(Fact& fact);
+    explicit NotExistPromise(Fact& fact);
 
 private:
     OVERRIDE(Result evaluate() const);

@@ -10,7 +10,7 @@ struct Fact;
 
 struct FactPromise : Promise
 {
-    FactPromise(Fact& fact);
+    explicit FactPromise(Fact& fact);
 
 private:
     OVERRIDE(void start());

@@ -1,4 +1,4 @@
-#include <muse/fact/DurationFact.h>
+#include <stubs/include/fact/DurationFact.h>
 
 MUSE_NS_BEGIN
 
@@ -7,7 +7,7 @@ DurationFact::DurationFact(unsigned int maxSeconds)
 {
 }
 
-bool DurationFact::doComfirm(const Event& event)
+bool DurationFact::handleEvent(const FakeEvent& event)
 {
     return (++currentSeconds >= maxSeconds);
 }

@@ -36,14 +36,14 @@ void SequentialPromise::doStop()
 
 void SequentialPromise::onEvent(const Event& event)
 {
-    if(isFixed(result)) return;
+    if(result.isFixed()) return;
 
     processEvent(event);
 }
 
 Result SequentialPromise::evaluate() const
 {
-    if(isFixed(result))  return result;
+    if(result.isFixed())  return result;
     return isFinish() ? Result::SUCCESS : Result::UNKNOWN;
 }
 
@@ -51,7 +51,7 @@ void SequentialPromise::processEvent(const Event& event)
 {
     current().onEvent(event);
 
-    switch(current().evaluate())
+    switch(current().evaluate().getValue())
     {
         case Result::UNKNOWN: /* need do nothing */ return;
         case Result::FAILED:  onCurrentFailed();    return;

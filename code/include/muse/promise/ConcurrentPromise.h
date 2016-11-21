@@ -9,7 +9,7 @@ MUSE_NS_BEGIN
 
 struct ConcurrentPromise : Promise
 {
-    ConcurrentPromise(std::initializer_list<Promise*>);
+    explicit ConcurrentPromise(std::initializer_list<Promise*>);
 
 private:
     OVERRIDE(void start());
@@ -23,7 +23,7 @@ private:
     void updateResult();
 
 private:
-    typedef std::list<Promise*> Promises;
+    using Promises = std::list<Promise*>;
     std::list<Promise*> promises;
     Result result{Result::UNKNOWN};
 };

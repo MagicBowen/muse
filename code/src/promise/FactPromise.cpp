@@ -1,5 +1,5 @@
 #include <muse/promise/FactPromise.h>
-#include <muse/fact/core/Fact.h>
+#include <muse/fact/Fact.h>
 #include <muse/event/Event.h>
 #include <muse/base/log.h>
 
@@ -88,8 +88,8 @@ void FactPromise::onStopped()
 {
     INFO_LOG("Promise is stopped!");
 
-    if(result == Result::UNKNOWN) result = Result::FAILED;
-    (result == Result::SUCCESS) ? onSuccess() : onFailed();
+    if(!result.isFixed()) result = Result::FAILED;
+    (result.isSuccess()) ? onSuccess() : onFailed();
 
     fact.dump();
 }

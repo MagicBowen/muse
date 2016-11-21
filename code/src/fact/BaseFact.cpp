@@ -1,4 +1,4 @@
-#include <muse/fact/core/BaseFact.h>
+#include <muse/fact/BaseFact.h>
 #include <muse/event/Event.h>
 #include <muse/base/log.h>
 #include <sstream>
@@ -9,7 +9,7 @@ bool BaseFact::confirm(const Event& event)
 {
     if(occurred) return true;
 
-    DBG_LOG("%s confirm event(type = %d, value = %f)", name(), event.type, event.value);
+    DBG_LOG("%s confirm event: %s", name(), event.detail().c_str());
 
     occurred = doComfirm(event);
     return occurred;
