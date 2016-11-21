@@ -4,7 +4,7 @@
 MUSE_NS_BEGIN
 
 SequentialPromise::SequentialPromise(std::initializer_list<Promise*> promises)
-: promises(promises)
+: CompositePromise(promises)
 {
     currentPromise = this->promises.begin();
 }

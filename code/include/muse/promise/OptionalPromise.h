@@ -7,6 +7,8 @@ MUSE_NS_BEGIN
 
 struct OptionalPromise : ParallelPromise
 {
+    OptionalPromise() {};
+
     explicit OptionalPromise(std::initializer_list<Promise*>);
 
 private:

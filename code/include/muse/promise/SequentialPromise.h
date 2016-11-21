@@ -1,14 +1,14 @@
 #ifndef HC626219A_60D0_4BE2_A8BA_6C8F164C301C
 #define HC626219A_60D0_4BE2_A8BA_6C8F164C301C
 
-#include <muse/promise/Promise.h>
-#include <initializer_list>
-#include <list>
+#include <muse/promise/CompositePromise.h>
 
 MUSE_NS_BEGIN
 
-struct SequentialPromise : Promise
+struct SequentialPromise : CompositePromise
 {
+    SequentialPromise() {}
+
     explicit SequentialPromise(std::initializer_list<Promise*>);
 
 private:
@@ -29,8 +29,6 @@ private:
     Promise& current();
 
 private:
-    using Promises = std::list<Promise*>;
-    std::list<Promise*> promises;
     Promises::iterator currentPromise;
     Result result{Result::UNKNOWN};
 };

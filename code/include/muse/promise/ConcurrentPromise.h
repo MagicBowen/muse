@@ -7,6 +7,8 @@ MUSE_NS_BEGIN
 
 struct ConcurrentPromise : ParallelPromise
 {
+    ConcurrentPromise() {};
+
     explicit ConcurrentPromise(std::initializer_list<Promise*>);
 
 private:

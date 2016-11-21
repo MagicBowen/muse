@@ -4,7 +4,7 @@
 MUSE_NS_BEGIN
 
 ParallelPromise::ParallelPromise(std::initializer_list<Promise*> promises)
-: promises(promises)
+: CompositePromise(promises)
 {
 }
 
