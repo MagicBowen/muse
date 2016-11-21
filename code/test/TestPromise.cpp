@@ -12,6 +12,7 @@
 #include <stubs/include/fact/StopFact.h>
 #include <stubs/include/fact/DurationFact.h>
 #include <stubs/include/event/FakeEvent.h>
+#include <muse/promise/OptionalPromise.h>
 
 USING_MUSE_NS;
 
@@ -222,6 +223,36 @@ TEST_F(TestPromise, should_concurrent_promise_success_when_the_not_exist_promise
     ConcurrentPromise promise({&existStop, &notExistCollision});
 
     ASSERT_TRUE(verify(promise));
+}
+
+TEST_F(TestPromise, should_optional_promise_success_when_any_promise_success)
+{
+    prepareEvents({E_SPEED(1), E_COLLISION()});
+
+    StopFact stop;
+    CollisionFact collision;
+
+    ExistPromise existStop(stop);
+    ExistPromise existCollision(collision);
+
+    OptionalPromise promise({&existStop, &existCollision});
+
+    ASSERT_TRUE(verify(promise));
+}
+
+TEST_F(TestPromise, should_optional_promise_fail_when_all_promise_success)
+{
+    prepareEvents({E_SPEED(1), E_COLLISION()});
+
+    StopFact stop;
+    CollisionFact collision;
+
+    ExistPromise existStop(stop);
+    NotExistPromise notExistCollision(collision);
+
+    OptionalPromise promise({&existStop, &notExistCollision});
+
+    ASSERT_FALSE(verify(promise));
 }
 
 TEST_F(TestPromise, should_composed_promise_success_when_all_promise_success)
