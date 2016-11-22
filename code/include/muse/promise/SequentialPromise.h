@@ -31,7 +31,7 @@ private:
 
 private:
     Promises::iterator currentPromise;
-    Result result{Result::UNKNOWN};
+    Result result;
 };
 
 MUSE_NS_END

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <stubs/include/event/EventGenerator.h>
-#include <stubs/include/simulation/Simulation.h>
+#include <stubs/include/runner/PromiseRunner.h>
 #include <muse/promise/ExistPromise.h>
 #include <muse/promise/NotExistPromise.h>
 #include <muse/promise/SequentialPromise.h>
@@ -13,6 +13,7 @@
 #include <stubs/include/fact/DurationFact.h>
 #include <stubs/include/event/FakeEvent.h>
 #include <muse/promise/OptionalPromise.h>
+#include <muse/promise/DaemonPromise.h>
 
 USING_MUSE_NS;
 
@@ -25,15 +26,15 @@ struct TestPromise : testing::Test
 
     bool verify(Promise& promise, unsigned int durationSeconds = 100)
     {
-        simulation.setPromise(promise);
-        simulation.setDuration(durationSeconds);
-        simulation.play();
-        return simulation.isSuccess();
+        promiseRunner.setPromise(promise);
+        promiseRunner.setDuration(durationSeconds);
+        promiseRunner.run();
+        return promiseRunner.isSuccess();
     }
 
 protected:
     EventGenerator generator;
-    Simulation simulation{generator};
+    PromiseRunner promiseRunner{generator};
 };
 
 TEST_F(TestPromise, should_promise_success_when_fact_is_confirmed)
@@ -240,7 +241,37 @@ TEST_F(TestPromise, should_optional_promise_success_when_any_promise_success)
     ASSERT_TRUE(verify(promise));
 }
 
-TEST_F(TestPromise, should_optional_promise_fail_when_all_promise_success)
+TEST_F(TestPromise, should_promise_fail_when_the_daemon_promise_fail)
+{
+    prepareEvents({E_SPEED(1), E_COLLISION()});
+
+    StopFact stop;
+    CollisionFact collision;
+
+    ExistPromise existStop(stop);
+    NotExistPromise notExistCollision(collision);
+
+    DaemonPromise promise(notExistCollision, existStop);
+
+    ASSERT_FALSE(verify(promise));
+}
+
+TEST_F(TestPromise, should_promise_success_when_the_not_daemon_promise_success)
+{
+    prepareEvents({E_SPEED(0), E_NOTHING()});
+
+    StopFact stop;
+    CollisionFact collision;
+
+    ExistPromise existStop(stop);
+    ExistPromise existCollision(collision);
+
+    DaemonPromise promise(existCollision, existStop);
+
+    ASSERT_TRUE(verify(promise));
+}
+
+TEST_F(TestPromise, should_optional_promise_fail_when_all_promise_fail)
 {
     prepareEvents({E_SPEED(1), E_COLLISION()});
 

@@ -33,7 +33,7 @@ private:
 
 protected:
     Fact& fact;
-    Result result{Result::UNKNOWN};
+    Result result;
 };
 
 MUSE_NS_END

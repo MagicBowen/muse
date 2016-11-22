@@ -9,12 +9,12 @@ struct EventFetcher;
 struct Promise;
 struct Event;
 
-struct Simulation
+struct PromiseRunner
 {
-    Simulation(EventFetcher&);
+    PromiseRunner(EventFetcher&);
     void setPromise(Promise&);
     void setDuration(unsigned int seconds);
-    void play();
+    void run();
     void stop();
     bool isSuccess() const;
 

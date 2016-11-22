@@ -1,4 +1,4 @@
-#include <stubs/include/simulation/Simulation.h>
+#include <stubs/include/runner/PromiseRunner.h>
 #include <muse/promise/Promise.h>
 #include <muse/event/EventFetcher.h>
 #include <muse/event/Event.h>
@@ -6,22 +6,22 @@
 
 MUSE_NS_BEGIN
 
-Simulation::Simulation(EventFetcher& fetcher)
+PromiseRunner::PromiseRunner(EventFetcher& fetcher)
 : fetcher(fetcher)
 {
 }
 
-void Simulation::setPromise(Promise& promise)
+void PromiseRunner::setPromise(Promise& promise)
 {
     this->promise = &promise;
 }
 
-void Simulation::setDuration(unsigned int seconds)
+void PromiseRunner::setDuration(unsigned int seconds)
 {
     this->durationSeconds = seconds;
 }
 
-void Simulation::play()
+void PromiseRunner::run()
 {
     if(!promise)
     {
@@ -34,7 +34,7 @@ void Simulation::play()
     proceed();
 }
 
-void Simulation::stop()
+void PromiseRunner::stop()
 {
     if(!promise) return;
     if(result) return;
@@ -42,7 +42,7 @@ void Simulation::stop()
     terminate();
 }
 
-void Simulation::proceed()
+void PromiseRunner::proceed()
 {
     while(auto event = fetcher.fetch())
     {
@@ -52,14 +52,14 @@ void Simulation::proceed()
     terminate();
 }
 
-void Simulation::terminate()
+void PromiseRunner::terminate()
 {
     INFO_LOG("Simulation terminate!")
     promise->stop();
     result = (promise->evaluate().isSuccess());
 }
 
-bool Simulation::processEvent(const Event& event)
+bool PromiseRunner::processEvent(const Event& event)
 {
     updateTime();
 
@@ -79,17 +79,17 @@ bool Simulation::processEvent(const Event& event)
     return true;
 }
 
-bool Simulation::isSuccess() const
+bool PromiseRunner::isSuccess() const
 {
     return result;
 }
 
-void Simulation::updateTime()
+void PromiseRunner::updateTime()
 {
     elaspedSeconds++;
 }
 
-bool Simulation::isTimeOut() const
+bool PromiseRunner::isTimeOut() const
 {
     return elaspedSeconds > durationSeconds;
 }

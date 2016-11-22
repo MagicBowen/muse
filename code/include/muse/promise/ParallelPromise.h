@@ -21,7 +21,7 @@ private:
     ABSTRACT(bool isSuccess() const);
 
 private:
-    Result result{Result::UNKNOWN};
+    Result result;
 };
 
 MUSE_NS_END

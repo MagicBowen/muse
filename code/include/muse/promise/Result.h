@@ -9,7 +9,7 @@ struct Result
 {
     enum Value{UNKNOWN, SUCCESS, FAILED};
 
-    Result(Value value);
+    Result(Value value = UNKNOWN);
     Result negative() const;
     bool isSuccess() const;
     bool isFailed() const;
@@ -17,7 +17,7 @@ struct Result
     Value getValue() const;
 
 private:
-    Value value{UNKNOWN};
+    Value value;
 };
 
 MUSE_NS_END
