@@ -10,12 +10,12 @@ struct BaseFact : Fact
 {
 private:
     OVERRIDE(bool confirm(const Event&));
-    OVERRIDE(void dump() const);
+    OVERRIDE(std::string info() const);
 
 private:
     ABSTRACT(bool doComfirm(const Event&));
     ABSTRACT(const char* name() const);
-    DEFAULT(std::string, info() const);
+    DEFAULT(std::string, detail() const);
 
 private:
     bool occurred{false};

@@ -9,23 +9,23 @@ bool BaseFact::confirm(const Event& event)
 {
     if(occurred) return true;
 
-    DBG_LOG("%s confirm event: %s", name(), event.detail().c_str());
+    DBG_LOG("%s confirm event: %s", name(), event.info().c_str());
 
     occurred = doComfirm(event);
     return occurred;
 }
 
-void BaseFact::dump() const
+std::string BaseFact::info() const
 {
     static const char* S_OCCURRED[] = {"not occurred", "occurred"};
 
     std::stringstream ss;
     ss << name() << " is " << S_OCCURRED[occurred] << ".\n";
-    ss << "----------------------------------------------------\n";
-    ss << (info().empty() ? "No details......" : info())  <<  "\n";
-    ss << "----------------------------------------------------";
+    ss << "------------------------------------------------------\n";
+    ss << (detail().empty() ? "No details......" : detail()) << "\n";
+    ss << "------------------------------------------------------";
 
-    WARN_LOG("%s", ss.str().c_str());
+    return ss.str();
 }
 
 MUSE_NS_END

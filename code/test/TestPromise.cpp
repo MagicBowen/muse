@@ -5,8 +5,8 @@
 #include <muse/promise/NotExistPromise.h>
 #include <muse/promise/SequentialPromise.h>
 #include <muse/promise/ConcurrentPromise.h>
-#include <muse/fact/AllFact.h>
-#include <muse/fact/AnyFact.h>
+#include <muse/fact/FactAnd.h>
+#include <muse/fact/FactOr.h>
 #include <stubs/include/fact/CollisionFact.h>
 #include <stubs/include/fact/DistanceLessFact.h>
 #include <stubs/include/fact/StopFact.h>
@@ -62,7 +62,7 @@ TEST_F(TestPromise, should_promise_success_when_all_of_fact_is_confirmed)
 
     CollisionFact collision;
     DistanceLessFact distance(10);
-    AllOfFact fact({&collision, &distance});
+    FactAnd fact({&collision, &distance});
     ExistPromise promise(fact);
 
     ASSERT_TRUE(verify(promise));
@@ -74,7 +74,7 @@ TEST_F(TestPromise, should_promise_success_when_one_of_fact_is_confirmed)
 
     CollisionFact collision;
     DistanceLessFact distance(10);
-    AnyOfFact fact({&collision, &distance});
+    FactOr fact({&collision, &distance});
     ExistPromise promise(fact);
 
     ASSERT_TRUE(verify(promise));

@@ -82,16 +82,18 @@ void FactPromise::onEvent(const Event& event)
 void FactPromise::onStarted()
 {
     INFO_LOG("Promise is started!");
+    fact.onStarted();
 }
 
 void FactPromise::onStopped()
 {
     INFO_LOG("Promise is stopped!");
+    WARN_LOG("%s", fact.info().c_str());
 
     if(!result.isFixed()) result = Result::FAILED;
     (result.isSuccess()) ? onSuccess() : onFailed();
 
-    fact.dump();
+    fact.onStopped();
 }
 
 MUSE_NS_END

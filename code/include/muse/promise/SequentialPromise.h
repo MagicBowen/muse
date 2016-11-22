@@ -2,6 +2,7 @@
 #define HC626219A_60D0_4BE2_A8BA_6C8F164C301C
 
 #include <muse/promise/CompositePromise.h>
+#include <initializer_list>
 
 MUSE_NS_BEGIN
 

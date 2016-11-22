@@ -20,7 +20,7 @@ struct FakeEvent : Event
     {
     }
 
-    OVERRIDE(std::string detail() const);
+    OVERRIDE(std::string info() const);
 
     FakeEventType type;
     double value;

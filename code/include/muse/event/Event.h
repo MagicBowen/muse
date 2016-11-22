@@ -8,7 +8,7 @@ MUSE_NS_BEGIN
 
 DEF_INTERFACE(Event)
 {
-    ABSTRACT(std::string detail() const);
+    ABSTRACT(std::string info() const);
 };
 
 MUSE_NS_END

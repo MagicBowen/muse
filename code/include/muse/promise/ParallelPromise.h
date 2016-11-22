@@ -7,10 +7,6 @@ MUSE_NS_BEGIN
 
 struct ParallelPromise : CompositePromise
 {
-    ParallelPromise() {}
-
-    explicit ParallelPromise(std::initializer_list<Promise*>);
-
 private:
     OVERRIDE(void start());
     OVERRIDE(void stop());

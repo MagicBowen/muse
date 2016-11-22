@@ -2,6 +2,7 @@
 #define H6E130008_291C_4D5A_AC0D_66B8AE81AD82
 
 #include <muse/promise/ParallelPromise.h>
+#include <initializer_list>
 
 MUSE_NS_BEGIN
 

@@ -5,8 +5,8 @@
 MUSE_NS_BEGIN
 
 OptionalPromise::OptionalPromise(std::initializer_list<Promise*> promises)
-: ParallelPromise(promises)
 {
+    foreach(promises, [this](Promise* promise){ addPromise(*promise); });
 }
 
 bool OptionalPromise::isFailed() const

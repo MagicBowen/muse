@@ -4,9 +4,10 @@
 MUSE_NS_BEGIN
 
 ConcurrentPromise::ConcurrentPromise(std::initializer_list<Promise*> promises)
-: ParallelPromise(promises)
 {
+    foreach(promises, [this](Promise* promise){ addPromise(*promise); });
 }
+
 bool ConcurrentPromise::isFailed() const
 {
     return anyof(promises, [](Promise* p){ return p->evaluate().isFailed(); });

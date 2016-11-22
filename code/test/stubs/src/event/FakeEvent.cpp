@@ -9,7 +9,7 @@ namespace
     const char* EventNames[] = {"NOTHING", "COLLISION", "DISTANCE", "SPEED"};
 }
 
-std::string FakeEvent::detail() const
+std::string FakeEvent::info() const
 {
     std::stringstream ss;
 
