@@ -14,6 +14,11 @@
 #include <stubs/include/event/FakeEvent.h>
 #include <muse/promise/OptionalPromise.h>
 #include <muse/promise/DaemonPromise.h>
+#include <stubs/include/promise/FactPromiseHelper.h>
+#include <stubs/include/promise/DaemonPromiseHelper.h>
+#include <stubs/include/promise/OptionalPromiseHelper.h>
+
+using namespace std::placeholders;
 
 USING_MUSE_NS;
 
@@ -41,8 +46,7 @@ TEST_F(TestPromise, should_promise_success_when_fact_is_confirmed)
 {
     prepareEvents({E_COLLISION()});
 
-    Collision fact;
-    ExistPromise promise(fact);
+    auto promise = __exist(Collision);
 
     ASSERT_TRUE(verify(promise));
 }
@@ -51,8 +55,7 @@ TEST_F(TestPromise, should_promise_fail_when_fact_is_not_confirmed)
 {
     prepareEvents({E_NOTHING()});
 
-    Collision fact;
-    NotExistPromise promise(fact);
+    auto promise = __not_exist(Collision);
 
     ASSERT_TRUE(verify(promise));
 }
@@ -129,7 +132,8 @@ TEST_F(TestPromise, should_not_confirm_event_when_promise_in_sequential_not_star
     Distance distance([](double value){return value < 5;});
 
     ExistPromise existStop(stop);
-    ExistPromise existDistance(distance);
+//    ExistPromise existDistance(distance);
+    auto existDistance = __exist(Distance, [](double value){return value < 5;});
 
     SequentialPromise promise({&existStop, &existDistance});
 
@@ -243,15 +247,10 @@ TEST_F(TestPromise, should_optional_promise_success_when_any_promise_success)
 
 TEST_F(TestPromise, should_promise_fail_when_the_daemon_promise_fail)
 {
-    prepareEvents({E_SPEED(1), E_COLLISION()});
+    prepareEvents({E_DISTANCE(5), E_COLLISION()});
 
-    Stop stop;
-    Collision collision;
-
-    ExistPromise existStop(stop);
-    NotExistPromise notExistCollision(collision);
-
-    DaemonPromise promise(notExistCollision, existStop);
+    auto lessThan4 = [](double v) {return v < 4;};
+    auto promise = __daemon(__not_exist(Collision), __exist(Distance, lessThan4));
 
     ASSERT_FALSE(verify(promise));
 }
@@ -260,13 +259,7 @@ TEST_F(TestPromise, should_promise_success_when_the_not_daemon_promise_success)
 {
     prepareEvents({E_SPEED(0), E_NOTHING()});
 
-    Stop stop;
-    Collision collision;
-
-    ExistPromise existStop(stop);
-    ExistPromise existCollision(collision);
-
-    DaemonPromise promise(existCollision, existStop);
+    auto promise = __daemon(__exist(Collision), __exist(Stop));
 
     ASSERT_TRUE(verify(promise));
 }
@@ -275,13 +268,7 @@ TEST_F(TestPromise, should_optional_promise_fail_when_all_promise_fail)
 {
     prepareEvents({E_SPEED(1), E_COLLISION()});
 
-    Stop stop;
-    Collision collision;
-
-    ExistPromise existStop(stop);
-    NotExistPromise notExistCollision(collision);
-
-    OptionalPromise promise({&existStop, &notExistCollision});
+    auto promise = __optional(__exist(Stop), __not_exist(Collision));
 
     ASSERT_FALSE(verify(promise));
 }
