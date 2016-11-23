@@ -7,9 +7,11 @@
 
 MUSE_NS_BEGIN
 
-DEF_FACT_BASE_OF(FactOr, CompositeFact)
+DEF_FACT_BASE_OF(FactAny, CompositeFact)
 {
-    explicit FactOr(std::initializer_list<Fact*>);
+    FactAny() { }
+
+    explicit FactAny(std::initializer_list<Fact*>);
 
 private:
     OVERRIDE(bool doComfirm(const Event&));

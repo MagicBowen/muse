@@ -33,6 +33,6 @@ OptionalPromiseHelper<PROMISES...> createOptionalPromise(PROMISES ... promises)
 
 MUSE_NS_END
 
-#define __optional(...)  createOptionalPromise(__VA_ARGS__)
+#define __opt(...)  createOptionalPromise(__VA_ARGS__)
 
 #endif

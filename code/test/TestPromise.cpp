@@ -1,24 +1,12 @@
 #include <gtest/gtest.h>
+#include <muse/dsl/PromiseDsl.h>
 #include <stubs/include/event/EventGenerator.h>
 #include <stubs/include/runner/PromiseRunner.h>
-#include <muse/promise/ExistPromise.h>
-#include <muse/promise/NotExistPromise.h>
-#include <muse/promise/SequentialPromise.h>
-#include <muse/promise/ConcurrentPromise.h>
-#include <muse/fact/FactAnd.h>
-#include <muse/fact/FactOr.h>
 #include <stubs/include/fact/Collision.h>
 #include <stubs/include/fact/Distance.h>
 #include <stubs/include/fact/Stop.h>
 #include <stubs/include/fact/Duration.h>
 #include <stubs/include/event/FakeEvent.h>
-#include <muse/promise/OptionalPromise.h>
-#include <muse/promise/DaemonPromise.h>
-#include <stubs/include/promise/FactPromiseHelper.h>
-#include <stubs/include/promise/DaemonPromiseHelper.h>
-#include <stubs/include/promise/OptionalPromiseHelper.h>
-
-using namespace std::placeholders;
 
 USING_MUSE_NS;
 
@@ -46,7 +34,7 @@ TEST_F(TestPromise, should_promise_success_when_fact_is_confirmed)
 {
     prepareEvents({E_COLLISION()});
 
-    auto promise = __exist(Collision);
+    auto promise = __exist(Collision());
 
     ASSERT_TRUE(verify(promise));
 }
@@ -55,7 +43,7 @@ TEST_F(TestPromise, should_promise_fail_when_fact_is_not_confirmed)
 {
     prepareEvents({E_NOTHING()});
 
-    auto promise = __not_exist(Collision);
+    auto promise = __not_exist(Collision());
 
     ASSERT_TRUE(verify(promise));
 }
@@ -64,10 +52,8 @@ TEST_F(TestPromise, should_promise_success_when_all_of_fact_is_confirmed)
 {
     prepareEvents({E_COLLISION(), E_NOTHING(), E_DISTANCE(5)});
 
-    Collision collision;
-    Distance distance([](double value){return value < 10;});
-    FactAnd fact({&collision, &distance});
-    ExistPromise promise(fact);
+    auto lessThan10 = [](double value){return value < 10;};
+    auto promise = __exist(__all(Collision(), Distance(lessThan10)));
 
     ASSERT_TRUE(verify(promise));
 }
@@ -78,7 +64,7 @@ TEST_F(TestPromise, should_promise_success_when_one_of_fact_is_confirmed)
 
     Collision collision;
     Distance distance([](double value){return value < 10;});
-    FactOr fact({&collision, &distance});
+    FactAny fact({&collision, &distance});
     ExistPromise promise(fact);
 
     ASSERT_TRUE(verify(promise));
@@ -132,8 +118,7 @@ TEST_F(TestPromise, should_not_confirm_event_when_promise_in_sequential_not_star
     Distance distance([](double value){return value < 5;});
 
     ExistPromise existStop(stop);
-//    ExistPromise existDistance(distance);
-    auto existDistance = __exist(Distance, [](double value){return value < 5;});
+    ExistPromise existDistance(distance);
 
     SequentialPromise promise({&existStop, &existDistance});
 
@@ -250,7 +235,7 @@ TEST_F(TestPromise, should_promise_fail_when_the_daemon_promise_fail)
     prepareEvents({E_DISTANCE(5), E_COLLISION()});
 
     auto lessThan4 = [](double v) {return v < 4;};
-    auto promise = __daemon(__not_exist(Collision), __exist(Distance, lessThan4));
+    auto promise = __daemon(__not_exist(Collision()), __exist(Distance(lessThan4)));
 
     ASSERT_FALSE(verify(promise));
 }
@@ -259,7 +244,7 @@ TEST_F(TestPromise, should_promise_success_when_the_not_daemon_promise_success)
 {
     prepareEvents({E_SPEED(0), E_NOTHING()});
 
-    auto promise = __daemon(__exist(Collision), __exist(Stop));
+    auto promise = __daemon(__exist(Collision()), __exist(Stop()));
 
     ASSERT_TRUE(verify(promise));
 }
@@ -268,7 +253,7 @@ TEST_F(TestPromise, should_optional_promise_fail_when_all_promise_fail)
 {
     prepareEvents({E_SPEED(1), E_COLLISION()});
 
-    auto promise = __optional(__exist(Stop), __not_exist(Collision));
+    auto promise = __opt(__exist(Stop()), __not_exist(Collision()));
 
     ASSERT_FALSE(verify(promise));
 }

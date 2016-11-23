@@ -20,7 +20,7 @@ private:
 
 MUSE_NS_END
 
-#define __exist(fact, ...) FactPromiseHelper<ExistPromise, fact>(fact(__VA_ARGS__))
-#define __not_exist(fact, ...) FactPromiseHelper<NotExistPromise, fact>(fact(__VA_ARGS__))
+#define __exist(...) FactPromiseHelper<ExistPromise, decltype(__VA_ARGS__)>(__VA_ARGS__)
+#define __not_exist(...) FactPromiseHelper<NotExistPromise, decltype(__VA_ARGS__)>(__VA_ARGS__)
 
 #endif

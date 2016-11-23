@@ -1,14 +1,14 @@
-#include <muse/fact/FactAnd.h>
+#include <muse/fact/FactAll.h>
 #include <muse/base/StdExt.h>
 
 MUSE_NS_BEGIN
 
-FactAnd::FactAnd(std::initializer_list<Fact*> facts)
+FactAll::FactAll(std::initializer_list<Fact*> facts)
 {
     foreach(facts, [this](Fact* f){ this->addFact(*f); });
 }
 
-bool FactAnd::doComfirm(const Event& event)
+bool FactAll::doComfirm(const Event& event)
 {
     return allof(facts, [&event](Fact* f){return f->confirm(event);});
 }

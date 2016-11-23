@@ -29,6 +29,9 @@ private:
     bool gotoNext();
     Promise& current();
 
+protected:
+    void reset();
+
 private:
     Promises::iterator currentPromise;
     Result result;

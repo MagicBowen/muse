@@ -6,7 +6,7 @@ MUSE_NS_BEGIN
 SequentialPromise::SequentialPromise(std::initializer_list<Promise*> promises)
 {
     foreach(promises, [this](Promise* promise){ addPromise(*promise); });
-    currentPromise = this->promises.begin();
+    reset();
 }
 
 Promise& SequentialPromise::current()
@@ -59,6 +59,11 @@ void SequentialPromise::processEvent(const Event& event)
     }
 
     return;
+}
+
+void SequentialPromise::reset()
+{
+    currentPromise = this->promises.begin();
 }
 
 void SequentialPromise::onCurrentFailed()
