@@ -1,5 +1,5 @@
 #include <muse/promise/OptionalPromise.h>
-#include <muse/base/Algorithm.h>
+#include <muse/base/StdExt.h>
 #include <muse/promise/Promise.h>
 
 MUSE_NS_BEGIN

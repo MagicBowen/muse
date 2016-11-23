@@ -1,9 +1,9 @@
-#include <stubs/include/fact/CollisionFact.h>
+#include <stubs/include/fact/Collision.h>
 #include <stubs/include/event/FakeEvent.h>
 
 MUSE_NS_BEGIN
 
-bool CollisionFact::handleEvent(const FakeEvent& event)
+bool Collision::handleEvent(const FakeEvent& event)
 {
     return (event.type == COLLISION);
 }

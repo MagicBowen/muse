@@ -1,5 +1,5 @@
 #include <stubs/include/event/EventGenerator.h>
-#include <muse/base/Algorithm.h>
+#include <muse/base/StdExt.h>
 
 MUSE_NS_BEGIN
 

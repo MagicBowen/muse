@@ -14,10 +14,12 @@ private:
 
 private:
     ABSTRACT(bool doComfirm(const Event&));
-    ABSTRACT(const char* name() const);
     DEFAULT(std::string, detail() const);
 
-private:
+protected:
+    ABSTRACT(const char* name() const);
+
+protected:
     bool occurred{false};
 };
 

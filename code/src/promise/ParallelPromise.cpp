@@ -1,5 +1,5 @@
 #include <muse/promise/ParallelPromise.h>
-#include <muse/base/Algorithm.h>
+#include <muse/base/StdExt.h>
 
 MUSE_NS_BEGIN
 
