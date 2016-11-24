@@ -10,8 +10,14 @@ template<typename ...PROMISES> struct ConcurrentPromiseHelper;
 template<typename PROMISE, typename ...OTHERS>
 struct ConcurrentPromiseHelper<PROMISE, OTHERS...> : ConcurrentPromiseHelper<OTHERS...>
 {
-    ConcurrentPromiseHelper(const PROMISE& p, OTHERS... others)
+    ConcurrentPromiseHelper(const PROMISE& p, const OTHERS&... others)
     : ConcurrentPromiseHelper<OTHERS...>(others...), promise(p)
+    {
+        this->addPromise(promise);
+    }
+
+    ConcurrentPromiseHelper(const ConcurrentPromiseHelper& rhs)
+    : ConcurrentPromiseHelper<OTHERS...>(rhs), promise(rhs.promise)
     {
         this->addPromise(promise);
     }
@@ -23,10 +29,19 @@ private:
 template<>
 struct ConcurrentPromiseHelper<> : ConcurrentPromise
 {
+    ConcurrentPromiseHelper()
+    {
+        this->clear();
+    }
+
+    ConcurrentPromiseHelper(const ConcurrentPromiseHelper&)
+    {
+        this->clear();
+    }
 };
 
 template<typename ...PROMISES>
-ConcurrentPromiseHelper<PROMISES...> createConcurrentPromise(PROMISES ... promises)
+ConcurrentPromiseHelper<PROMISES...> createConcurrentPromise(const PROMISES&... promises)
 {
     return ConcurrentPromiseHelper<PROMISES...>(promises...);
 }

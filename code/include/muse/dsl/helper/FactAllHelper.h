@@ -10,8 +10,14 @@ template<typename ...FACTS> struct FactAllHelper;
 template<typename FACT, typename ...OTHERS>
 struct FactAllHelper<FACT, OTHERS...> : FactAllHelper<OTHERS...>
 {
-    FactAllHelper(const FACT& f, OTHERS... others)
+    FactAllHelper(const FACT& f, const OTHERS&... others)
     : FactAllHelper<OTHERS...>(others...), fact(f)
+    {
+        this->addFact(fact);
+    }
+
+    FactAllHelper(const FactAllHelper& rhs)
+    : FactAllHelper<OTHERS...>(rhs), fact(rhs.fact)
     {
         this->addFact(fact);
     }
@@ -23,10 +29,19 @@ private:
 template<>
 struct FactAllHelper<> : FactAll
 {
+    FactAllHelper()
+    {
+        this->clear();
+    }
+
+    FactAllHelper(const FactAllHelper&)
+    {
+        this->clear();
+    }
 };
 
 template<typename ...FACTS>
-FactAllHelper<FACTS...> createFactAll(FACTS ... facts)
+FactAllHelper<FACTS...> createFactAll(const FACTS&... facts)
 {
     return FactAllHelper<FACTS...>(facts...);
 }

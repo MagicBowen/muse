@@ -8,6 +8,7 @@ MUSE_NS_BEGIN
 
 struct CompositePromise : Promise
 {
+    void clear();
     void addPromise(Promise&);
 
 protected:

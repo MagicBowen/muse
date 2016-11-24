@@ -3,6 +3,11 @@
 
 MUSE_NS_BEGIN
 
+void CompositeFact::clear()
+{
+    facts.clear();
+}
+
 void CompositeFact::addFact(Fact& fact)
 {
     facts.push_back(&fact);

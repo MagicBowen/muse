@@ -10,8 +10,14 @@ template<typename ...PROMISES> struct OptionalPromiseHelper;
 template<typename PROMISE, typename ...OTHERS>
 struct OptionalPromiseHelper<PROMISE, OTHERS...> : OptionalPromiseHelper<OTHERS...>
 {
-    OptionalPromiseHelper(const PROMISE& p, OTHERS... others)
+    OptionalPromiseHelper(const PROMISE& p, const OTHERS&... others)
     : OptionalPromiseHelper<OTHERS...>(others...), promise(p)
+    {
+        this->addPromise(promise);
+    }
+
+    OptionalPromiseHelper(const OptionalPromiseHelper& rhs)
+    : OptionalPromiseHelper<OTHERS...>(rhs), promise(rhs.promise)
     {
         this->addPromise(promise);
     }
@@ -23,10 +29,19 @@ private:
 template<>
 struct OptionalPromiseHelper<> : OptionalPromise
 {
+    OptionalPromiseHelper()
+    {
+        this->clear();
+    }
+
+    OptionalPromiseHelper(const OptionalPromiseHelper&)
+    {
+        this->clear();
+    }
 };
 
 template<typename ...PROMISES>
-OptionalPromiseHelper<PROMISES...> createOptionalPromise(PROMISES ... promises)
+OptionalPromiseHelper<PROMISES...> createOptionalPromise(const PROMISES&... promises)
 {
     return OptionalPromiseHelper<PROMISES...>(promises...);
 }

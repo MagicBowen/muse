@@ -13,6 +13,11 @@ struct DaemonPromiseHelper : DaemonPromise
     {
     }
 
+    DaemonPromiseHelper(const DaemonPromiseHelper& rhs)
+    : DaemonPromise(daemon, promise), daemon(rhs.daemon), promise(rhs.promise)
+    {
+    }
+
 private:
     DAEMON daemon;
     PROMISE promise;

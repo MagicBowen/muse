@@ -14,6 +14,11 @@ struct FactPromiseHelper : PROMISE
     {
     }
 
+    FactPromiseHelper(const FactPromiseHelper& rhs)
+    : PROMISE(fact), fact(rhs.fact)
+    {
+    }
+
 private:
     FACT fact;
 };

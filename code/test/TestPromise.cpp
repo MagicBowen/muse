@@ -227,33 +227,12 @@ TEST_F(TestPromise, should_optional_promise_fail_when_all_promise_fail)
 
 TEST_F(TestPromise, should_composed_promise_success_when_all_promise_success)
 {
-    prepareEvents({E_DISTANCE(11),
-                   E_SPEED(0),
-                   E_DISTANCE(9),
-                   E_NOTHING(),
-                   E_SPEED(1)});
+    prepareEvents({E_DISTANCE(11), E_SPEED(0), E_DISTANCE(9), E_NOTHING(), E_SPEED(1)});
 
-    Collision collision;
-    NotExistPromise notExistCollision(collision);
-
-    Distance distance([](double value){return value < 10;});
-    Stop stop;
-
-    unsigned int time = 1;
-    Duration duration([time](double value){return value > time;});
-
-    ExistPromise existDistance(distance);
-    NotExistPromise notExistStop(stop);
-    ExistPromise existDuration(duration);
-
-    ConcurrentPromise notStop_and_duration({&notExistStop, &existDuration});
-    SequentialPromise inDistance_then_notStop_and_duration({&existDistance, &notStop_and_duration});
-    ConcurrentPromise promise({&notExistCollision, &inDistance_then_notStop_and_duration});
-
-//    auto promise = __con( __not_exist(Collision())
-//                        , __seq( __exist(Distance(LessThan(10)))
-//                               , __con( __not_exist(Stop())
-//                                      , __exist(Duration(MoreThan(1))))));
+    auto promise = __con( __not_exist(Collision())
+                        , __seq( __exist(Distance(LessThan(10)))
+                               , __con( __not_exist(Stop())
+                                      , __exist(Duration(MoreThan(1))))));
 
     ASSERT_TRUE(verify(promise));
 }

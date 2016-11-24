@@ -8,6 +8,7 @@ MUSE_NS_BEGIN
 
 struct CompositeFact : BaseFact
 {
+    void clear();
     void addFact(Fact&);
 
 private:
