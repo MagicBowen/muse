@@ -10,7 +10,14 @@ FactAll::FactAll(std::initializer_list<Fact*> facts)
 
 bool FactAll::doComfirm(const Event& event)
 {
-    return allof(facts, [&event](Fact* f){return f->confirm(event);});
+    auto result{true};
+
+    for(auto fact : facts)
+    {
+        result = fact->confirm(event);
+    }
+
+    return result;
 }
 
 MUSE_NS_END

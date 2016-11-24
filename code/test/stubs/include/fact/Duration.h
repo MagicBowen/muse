@@ -8,7 +8,7 @@ MUSE_NS_BEGIN
 
 DEF_FACT_BASE_OF(Duration, FakeFact)
 {
-    explicit Duration(Pred<unsigned int> pred);
+    explicit Duration(Pred<unsigned int>);
 
 private:
     OVERRIDE(bool handleEvent(const FakeEvent&));

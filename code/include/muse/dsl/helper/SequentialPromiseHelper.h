@@ -13,7 +13,8 @@ struct SequentialPromiseHelper<PROMISE, OTHERS...> : SequentialPromiseHelper<OTH
     SequentialPromiseHelper(const PROMISE& p, OTHERS... others)
     : SequentialPromiseHelper<OTHERS...>(others...), promise(p)
     {
-        this->addPromise(promise);
+        this->promises.push_front(&promise);
+        this->reset();
     }
 
 private:
@@ -26,7 +27,7 @@ struct SequentialPromiseHelper<PROMISE> : SequentialPromise
     SequentialPromiseHelper(const PROMISE& p)
     : promise(p)
     {
-        this->addPromise(promise);
+        this->promises.push_front(&promise);
         this->reset();
     }
 
