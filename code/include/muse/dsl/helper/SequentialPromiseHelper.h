@@ -52,9 +52,9 @@ private:
 };
 
 template<typename ...PROMISES>
-SequentialPromiseHelper<PROMISES...> createSequentialPromise(const PROMISES&... promises)
+auto createSequentialPromise(PROMISES&&... promises)
 {
-    return SequentialPromiseHelper<PROMISES...>(promises...);
+    return SequentialPromiseHelper<std::decay_t<PROMISES>...>(std::forward<PROMISES>(promises)...);
 }
 
 MUSE_NS_END

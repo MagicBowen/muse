@@ -41,9 +41,9 @@ struct FactAnyHelper<> : FactAny
 };
 
 template<typename ...FACTS>
-FactAnyHelper<FACTS...> createFactAny(const FACTS&... facts)
+auto createFactAny(FACTS&&... facts)
 {
-    return FactAnyHelper<FACTS...>(facts...);
+    return FactAnyHelper<std::decay_t<FACTS>...>(std::forward<FACTS>(facts)...);
 }
 
 MUSE_NS_END

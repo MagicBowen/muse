@@ -41,9 +41,9 @@ struct ConcurrentPromiseHelper<> : ConcurrentPromise
 };
 
 template<typename ...PROMISES>
-ConcurrentPromiseHelper<PROMISES...> createConcurrentPromise(const PROMISES&... promises)
+auto createConcurrentPromise(PROMISES&&... promises)
 {
-    return ConcurrentPromiseHelper<PROMISES...>(promises...);
+    return ConcurrentPromiseHelper<std::decay_t<PROMISES>...>(std::forward<PROMISES>(promises)...);
 }
 
 MUSE_NS_END

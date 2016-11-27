@@ -41,9 +41,9 @@ struct FactAllHelper<> : FactAll
 };
 
 template<typename ...FACTS>
-FactAllHelper<FACTS...> createFactAll(const FACTS&... facts)
+auto createFactAll(FACTS&&... facts)
 {
-    return FactAllHelper<FACTS...>(facts...);
+    return FactAllHelper<std::decay_t<FACTS>...>(std::forward<FACTS>(facts)...);
 }
 
 MUSE_NS_END

@@ -41,9 +41,9 @@ struct OptionalPromiseHelper<> : OptionalPromise
 };
 
 template<typename ...PROMISES>
-OptionalPromiseHelper<PROMISES...> createOptionalPromise(const PROMISES&... promises)
+auto createOptionalPromise(PROMISES&&... promises)
 {
-    return OptionalPromiseHelper<PROMISES...>(promises...);
+    return OptionalPromiseHelper<std::decay_t<PROMISES>...>(std::forward<PROMISES>(promises)...);
 }
 
 MUSE_NS_END
