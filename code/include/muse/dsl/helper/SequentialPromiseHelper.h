@@ -2,53 +2,24 @@
 #define HFB8BFAE7_6E9E_46ED_81BA_F16B8CADE558
 
 #include <muse/promise/SequentialPromise.h>
+#include <muse/dsl/helper/CompositePromiseHelper.h>
 
 MUSE_NS_BEGIN
 
-template<typename ...PROMISES> struct SequentialPromiseHelper;
-
-template<typename PROMISE, typename ...OTHERS>
-struct SequentialPromiseHelper<PROMISE, OTHERS...> : SequentialPromiseHelper<OTHERS...>
+template<typename ... PROMISES>
+struct SequentialPromiseHelper : CompositePromiseHelper<SequentialPromise, PROMISES...>
 {
-    SequentialPromiseHelper(const PROMISE& p, const OTHERS&... others)
-    : SequentialPromiseHelper<OTHERS...>(others...), promise(p)
+    SequentialPromiseHelper(PROMISES&& ... ps)
+    : CompositePromiseHelper<SequentialPromise, PROMISES...>(std::forward<PROMISES>(ps) ...)
     {
-        this->promises.push_front(&promise);
         this->reset();
     }
 
     SequentialPromiseHelper(const SequentialPromiseHelper& rhs)
-    : SequentialPromiseHelper<OTHERS...>(rhs), promise(rhs.promise)
+    : CompositePromiseHelper<SequentialPromise, PROMISES...>(rhs)
     {
-        this->promises.push_front(&promise);
         this->reset();
     }
-
-private:
-    PROMISE promise;
-};
-
-template<typename PROMISE>
-struct SequentialPromiseHelper<PROMISE> : SequentialPromise
-{
-    SequentialPromiseHelper(const PROMISE& p)
-    : promise(p)
-    {
-        this->clear();
-        this->promises.push_front(&promise);
-        this->reset();
-    }
-
-    SequentialPromiseHelper(const SequentialPromiseHelper& rhs)
-    : promise(rhs.promise)
-    {
-        this->clear();
-        this->promises.push_front(&promise);
-        this->reset();
-    }
-
-private:
-    PROMISE promise;
 };
 
 template<typename ...PROMISES>

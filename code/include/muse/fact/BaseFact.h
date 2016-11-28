@@ -9,7 +9,8 @@ MUSE_NS_BEGIN
 struct BaseFact : Fact
 {
 private:
-    OVERRIDE(bool confirm(const Event&));
+    OVERRIDE(void confirm(const Event&));
+    OVERRIDE(bool isOccurred() const);
     OVERRIDE(std::string info() const);
 
 private:

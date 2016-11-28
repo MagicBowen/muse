@@ -10,7 +10,8 @@ struct Event;
 
 DEF_INTERFACE(Fact)
 {
-    ABSTRACT(bool confirm(const Event&));
+    ABSTRACT(void confirm(const Event&));
+    ABSTRACT(bool isOccurred() const);
     DEFAULT(void, onStarted());
     DEFAULT(void, onStopped());
     DEFAULT(std::string, info() const);

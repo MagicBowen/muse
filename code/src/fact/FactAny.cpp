@@ -10,7 +10,7 @@ FactAny::FactAny(std::initializer_list<Fact*> facts)
 
 bool FactAny::doComfirm(const Event& event)
 {
-    return anyof(facts, [&event](Fact* f){return f->confirm(event);});
+    return anyof(facts, [&event](Fact* f){ f->confirm(event); return f->isOccurred();});
 }
 
 MUSE_NS_END

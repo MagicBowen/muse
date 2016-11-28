@@ -14,7 +14,8 @@ bool FactAll::doComfirm(const Event& event)
 
     for(auto fact : facts)
     {
-        result = fact->confirm(event);
+        fact->confirm(event);
+        result = fact->isOccurred();
     }
 
     return result;

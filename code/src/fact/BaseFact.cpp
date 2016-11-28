@@ -5,13 +5,17 @@
 
 MUSE_NS_BEGIN
 
-bool BaseFact::confirm(const Event& event)
+void BaseFact::confirm(const Event& event)
 {
-    if(occurred) return true;
+    if(occurred) return;
 
     DBG_LOG("%s confirm event: %s", name(), event.info().c_str());
 
     occurred = doComfirm(event);
+}
+
+bool BaseFact::isOccurred() const
+{
     return occurred;
 }
 

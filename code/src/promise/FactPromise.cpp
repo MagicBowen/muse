@@ -33,16 +33,16 @@ __DEF_GOF_STATE(FactPromise, Started)
 private:
     OVERRIDE(void stop(FactPromise& THIS))
     {
-        THIS.result = Result::FAILED;
         THIS.onStopped();
         THIS.__GOTO_STATE(Stopped);
     }
 
     OVERRIDE(void onEvent(FactPromise& THIS, const Event& event))
     {
-        if(THIS.fact.confirm(event))
+        THIS.fact.confirm(event);
+
+        if(THIS.fact.isOccurred())
         {
-            THIS.result = Result::SUCCESS;
             THIS.onStopped();
             THIS.__GOTO_STATE(Stopped);
         }
@@ -90,10 +90,10 @@ void FactPromise::onStopped()
     INFO_LOG("Promise is stopped!");
     WARN_LOG("%s", fact.info().c_str());
 
-    if(!result.isFixed()) result = Result::FAILED;
-    (result.isSuccess()) ? onSuccess() : onFailed();
-
     fact.onStopped();
+
+    result = fact.isOccurred()? Result::SUCCESS : Result::FAILED;
+    (result.isSuccess()) ? onSuccess() : onFailed();
 }
 
 MUSE_NS_END
