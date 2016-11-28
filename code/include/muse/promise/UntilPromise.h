@@ -1,13 +1,13 @@
-#ifndef H551580F8_9AED_4C2C_8D3C_ACA616288098
-#define H551580F8_9AED_4C2C_8D3C_ACA616288098
+#ifndef HE49B3DA0_0C4E_46AA_90A0_27B45637012B
+#define HE49B3DA0_0C4E_46AA_90A0_27B45637012B
 
 #include <muse/promise/Promise.h>
 
 MUSE_NS_BEGIN
 
-struct DaemonPromise : Promise
+struct UntilPromise : Promise
 {
-    DaemonPromise(Promise& daemon, Promise& promise);
+    UntilPromise(Promise& until, Promise& promise);
 
 private:
     OVERRIDE(void start());
@@ -19,7 +19,7 @@ private:
     void updateResult();
 
 private:
-    Promise& daemon;
+    Promise& until;
     Promise& promise;
     Result result;
 };

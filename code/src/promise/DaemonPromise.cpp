@@ -15,10 +15,12 @@ void DaemonPromise::start()
 
 void DaemonPromise::stop()
 {
-    if(result.isFailed()) return;
+    if(result.isFixed()) return;
 
     daemon.stop();
     promise.stop();
+
+    updateResult();
 }
 
 void DaemonPromise::onEvent(const Event& event)
@@ -41,6 +43,17 @@ void DaemonPromise::onEvent(const Event& event)
         result = Result::SUCCESS;
         return;
     }
+}
+
+void DaemonPromise::updateResult()
+{
+    if(promise.evaluate().isSuccess())
+    {
+        result = Result::SUCCESS;
+        return;
+    }
+
+    result = Result::FAILED;
 }
 
 Result DaemonPromise::evaluate() const

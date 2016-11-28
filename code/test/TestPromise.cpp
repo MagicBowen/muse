@@ -216,6 +216,15 @@ TEST_F(TestPromise, should_promise_success_when_the_not_daemon_promise_success)
     ASSERT_TRUE(verify(promise));
 }
 
+TEST_F(TestPromise, should_promise_success_when_the_daemon_promise_be_stopped)
+{
+    prepareEvents({E_NOTHING(), E_NOTHING()});
+
+    auto promise = __daemon(__not_exist(Stop()), __not_exist(Collision()));
+
+    ASSERT_TRUE(verify(promise));
+}
+
 TEST_F(TestPromise, should_optional_promise_fail_when_all_promise_fail)
 {
     prepareEvents({E_SPEED(1), E_COLLISION()});
