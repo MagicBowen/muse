@@ -1,27 +1,17 @@
 #ifndef HE49B3DA0_0C4E_46AA_90A0_27B45637012B
 #define HE49B3DA0_0C4E_46AA_90A0_27B45637012B
 
-#include <muse/promise/Promise.h>
+#include <muse/promise/DecoratorPromise.h>
 
 MUSE_NS_BEGIN
 
-struct UntilPromise : Promise
+struct UntilPromise : DecoratorPromise
 {
     UntilPromise(Promise& until, Promise& promise);
 
 private:
-    OVERRIDE(void start());
-    OVERRIDE(void stop());
-    OVERRIDE(void onEvent(const Event&));
-    OVERRIDE(Result evaluate() const);
-
-private:
-    void updateResult();
-
-private:
-    Promise& until;
-    Promise& promise;
-    Result result;
+    OVERRIDE(bool isFinished() const);
+    OVERRIDE(void fixResult());
 };
 
 MUSE_NS_END

@@ -1,27 +1,17 @@
 #ifndef H551580F8_9AED_4C2C_8D3C_ACA616288098
 #define H551580F8_9AED_4C2C_8D3C_ACA616288098
 
-#include <muse/promise/Promise.h>
+#include <muse/promise/DecoratorPromise.h>
 
 MUSE_NS_BEGIN
 
-struct DaemonPromise : Promise
+struct DaemonPromise : DecoratorPromise
 {
     DaemonPromise(Promise& daemon, Promise& promise);
 
 private:
-    OVERRIDE(void start());
-    OVERRIDE(void stop());
-    OVERRIDE(void onEvent(const Event&));
-    OVERRIDE(Result evaluate() const);
-
-private:
-    void updateResult();
-
-private:
-    Promise& daemon;
-    Promise& promise;
-    Result result;
+    OVERRIDE(bool isFinished() const);
+    OVERRIDE(void fixResult());
 };
 
 MUSE_NS_END

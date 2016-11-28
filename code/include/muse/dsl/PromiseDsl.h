@@ -5,6 +5,7 @@
 #include <muse/dsl/helper/FactAnyHelper.h>
 #include <muse/dsl/helper/FactPromiseHelper.h>
 #include <muse/dsl/helper/DaemonPromiseHelper.h>
+#include <muse/dsl/helper/UntilPromiseHelper.h>
 #include <muse/dsl/helper/OptionalPromiseHelper.h>
 #include <muse/dsl/helper/ConcurrentPromiseHelper.h>
 #include <muse/dsl/helper/SequentialPromiseHelper.h>

@@ -3,49 +3,25 @@
 MUSE_NS_BEGIN
 
 DaemonPromise::DaemonPromise(Promise& daemon, Promise& promise)
-: daemon(daemon), promise(promise)
+: DecoratorPromise(daemon, promise)
 {
 }
 
-void DaemonPromise::start()
+bool DaemonPromise::isFinished() const
 {
-    daemon.start();
-    promise.start();
-}
-
-void DaemonPromise::stop()
-{
-    if(result.isFixed()) return;
-
-    daemon.stop();
-    promise.stop();
-
-    updateResult();
-}
-
-void DaemonPromise::onEvent(const Event& event)
-{
-    daemon.onEvent(event);
-    promise.onEvent(event);
-
-    if(daemon.evaluate().isFailed() ||
+    if(decorator.evaluate().isFailed() ||
        promise.evaluate().isFailed())
     {
-        daemon.stop();
-        promise.stop();
-        result = Result::FAILED;
-        return;
+        return true;
     }
-
     if(promise.evaluate().isSuccess())
     {
-        daemon.stop();
-        result = Result::SUCCESS;
-        return;
+        return true;
     }
+    return false;
 }
 
-void DaemonPromise::updateResult()
+void DaemonPromise::fixResult()
 {
     if(promise.evaluate().isSuccess())
     {
@@ -54,11 +30,6 @@ void DaemonPromise::updateResult()
     }
 
     result = Result::FAILED;
-}
-
-Result DaemonPromise::evaluate() const
-{
-    return result;
 }
 
 MUSE_NS_END

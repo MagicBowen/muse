@@ -225,6 +225,24 @@ TEST_F(TestPromise, should_promise_success_when_the_daemon_promise_be_stopped)
     ASSERT_TRUE(verify(promise));
 }
 
+TEST_F(TestPromise, should_promise_fix_when_until_promise_fix)
+{
+    prepareEvents({E_DISTANCE(4), E_DISTANCE(3), E_DISTANCE(2), E_DISTANCE(1)});
+
+    auto promise = __until(__exist(Duration(MoreThan(2))), __not_exist(Distance(LessThan(2))));
+
+    ASSERT_TRUE(verify(promise));
+}
+
+TEST_F(TestPromise, should_promise_success_when_until_promise_terminate)
+{
+    prepareEvents({E_NOTHING(), E_SPEED(1), E_COLLISION()});
+
+    auto promise = __until(__exist(Stop()), __exist(Collision()));
+
+    ASSERT_TRUE(verify(promise));
+}
+
 TEST_F(TestPromise, should_optional_promise_fail_when_all_promise_fail)
 {
     prepareEvents({E_SPEED(1), E_COLLISION()});

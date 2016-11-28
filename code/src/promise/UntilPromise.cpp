@@ -3,62 +3,39 @@
 MUSE_NS_BEGIN
 
 UntilPromise::UntilPromise(Promise& until, Promise& promise)
-: until(until), promise(promise)
+: DecoratorPromise(until, promise)
 {
 }
 
-void UntilPromise::start()
+bool UntilPromise::isFinished() const
 {
-    until.start();
-    promise.start();
-}
-
-void UntilPromise::stop()
-{
-    if(result.isFixed()) return;
-
-    until.stop();
-    promise.stop();
-
-    updateResult();
-}
-
-void UntilPromise::onEvent(const Event& event)
-{
-    until.onEvent(event);
-    promise.onEvent(event);
-
-    if(until.evaluate().isFailed() ||
+    if(decorator.evaluate().isFailed() ||
        promise.evaluate().isFailed())
     {
-        until.stop();
-        promise.stop();
-        result = Result::FAILED;
-        return;
+        return true;
     }
-
-    if(until.evaluate().isSuccess())
+    if(decorator.evaluate().isSuccess() ||
+       promise.evaluate().isSuccess())
     {
-        promise.stop();
-        result = promise.evaluate();
-        return;
+        return true;
     }
+    return false;
 }
 
-void UntilPromise::updateResult()
+void UntilPromise::fixResult()
 {
-    if(until.evaluate().isSuccess())
+    if(decorator.evaluate().isSuccess())
     {
         result = promise.evaluate();
+        return;
+    }
+    if(promise.evaluate().isSuccess())
+    {
+        result = Result::SUCCESS;
         return;
     }
 
     result = Result::FAILED;
-}
-
-Result UntilPromise::evaluate() const
-{
-    return result;
 }
 
 MUSE_NS_END
