@@ -14,22 +14,24 @@ struct Compose
     template<size_t N, typename ... Ts>
     auto apply(std::integral_constant<size_t, N>, Ts&& ... ts) const
     {
-        return apply( std::integral_constant<size_t, N - 1>{}
+        return apply( std::integral_constant<size_t, N + 1>{}
                     , std::get<N>(functions)(std::forward<Ts>(ts)...));
     }
 
+    constexpr size_t size = sizeof ... (Fs) - 1;
     template<typename ... Ts>
-    auto apply(std::integral_constant<size_t, 0>, Ts&& ... ts) const
+    auto apply(std::integral_constant<size_t, size>, Ts&& ... ts) const
     {
-        return std::get<0>(functions)(std::forward<Ts>(ts)...);
+        return std::get<size>(functions)(std::forward<Ts>(ts)...);
     }
 
     template<typename ... Ts>
     auto operator()(Ts&& ... ts) const
     {
-        return apply(std::integral_constant<size_t, sizeof ... (Fs) - 1>{}, std::forward<Ts>(ts) ...);
+        return apply(std::integral_constant<size_t, 0>{}, std::forward<Ts>(ts) ...);
     }
 
+private:
     std::tuple<Fs ...> functions;
 };
 
@@ -40,5 +42,7 @@ auto make_compose(Fs&& ... fs)
 }
 
 MUSE_NS_END
+
+#define __pred_of(...)  MUSE_NS::make_compose(__VA_ARGS__)
 
 #endif

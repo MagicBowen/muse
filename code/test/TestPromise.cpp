@@ -7,6 +7,7 @@
 #include <stubs/include/fact/Stop.h>
 #include <stubs/include/fact/Duration.h>
 #include <stubs/include/event/FakeEvent.h>
+#include <muse/dsl/helper/ClosureFactHelper.h>
 
 USING_MUSE_NS;
 
@@ -36,6 +37,21 @@ namespace
         bool operator()(double value) const
         {
             return value > bound;
+        }
+
+    private:
+        double bound;
+    };
+
+    struct EqualTo
+    {
+        EqualTo(double bound) : bound(bound)
+        {
+        }
+
+        bool operator()(double value) const
+        {
+            return value == bound;
         }
 
     private:
@@ -95,6 +111,24 @@ TEST_F(TestPromise, should_promise_success_when_one_of_fact_is_confirmed)
     prepareEvents({E_NOTHING(), E_DISTANCE(15), E_COLLISION()});
 
     auto promise = __exist(__any(Collision(), Distance(LessThan(10))));
+
+    ASSERT_TRUE(verify(promise));
+}
+
+TEST_F(TestPromise, should_evaluate_in_end_when_declare_closure_fact)
+{
+    prepareEvents({E_DISTANCE(0), E_DISTANCE(10)});
+
+    auto promise = __exist(__closure(Distance(LessThan(10))));
+
+    ASSERT_FALSE(verify(promise));
+}
+
+TEST_F(TestPromise, should_evaluate_in_end_when_until_promise_occurred)
+{
+    prepareEvents({E_DISTANCE(0), E_DISTANCE(5), E_DISTANCE(10)});
+
+    auto promise = __until(__exist(Duration(EqualTo(2))), __exist(__closure(Distance(LessThan(10)))));
 
     ASSERT_TRUE(verify(promise));
 }

@@ -7,8 +7,6 @@ MUSE_NS_BEGIN
 
 void BaseFact::confirm(const Event& event)
 {
-    if(occurred) return;
-
     DBG_LOG("%s confirm event: %s", name(), event.info().c_str());
 
     occurred = doComfirm(event);
