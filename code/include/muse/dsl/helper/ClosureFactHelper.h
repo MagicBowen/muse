@@ -24,6 +24,6 @@ private:
 
 MUSE_NS_END
 
-#define __closure(...)  ClosureFactHelper<decltype(__VA_ARGS__)>(__VA_ARGS__)
+#define __closure(...)  ::MUSE_NS::ClosureFactHelper<decltype(__VA_ARGS__)>(__VA_ARGS__)
 
 #endif

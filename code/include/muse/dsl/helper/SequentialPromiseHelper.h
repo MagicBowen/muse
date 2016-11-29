@@ -23,14 +23,14 @@ struct SequentialPromiseHelper : CompositePromiseHelper<SequentialPromise, PROMI
 };
 
 template<typename ...PROMISES>
-auto createSequentialPromise(PROMISES&&... promises)
+auto make_sequential_promise(PROMISES&&... promises)
 {
     return SequentialPromiseHelper<std::decay_t<PROMISES>...>(std::forward<PROMISES>(promises)...);
 }
 
 MUSE_NS_END
 
-#define __seq(...)  createSequentialPromise(__VA_ARGS__)
+#define __seq(...)    ::MUSE_NS::make_sequential_promise(__VA_ARGS__)
 
 #endif
 

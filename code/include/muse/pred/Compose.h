@@ -18,7 +18,7 @@ struct Compose
                     , std::get<N>(functions)(std::forward<Ts>(ts)...));
     }
 
-    constexpr size_t size = sizeof ... (Fs) - 1;
+    constexpr static size_t size = sizeof ... (Fs) - 1;
     template<typename ... Ts>
     auto apply(std::integral_constant<size_t, size>, Ts&& ... ts) const
     {
@@ -29,6 +29,22 @@ struct Compose
     auto operator()(Ts&& ... ts) const
     {
         return apply(std::integral_constant<size_t, 0>{}, std::forward<Ts>(ts) ...);
+    }
+
+    template<size_t N>
+    std::string getInfoOf(std::integral_constant<size_t, N>) const
+    {
+        return std::get<N>(functions).info() + std::string(" ") + getInfoOf(std::integral_constant<size_t, N + 1>{});
+    }
+
+    std::string getInfoOf(std::integral_constant<size_t, size>) const
+    {
+        return std::get<size>(functions).info();
+    }
+
+    std::string info() const
+    {
+        return std::string("predicate that ") + getInfoOf(std::integral_constant<size_t, 0>{});
     }
 
 private:
@@ -43,6 +59,6 @@ auto make_compose(Fs&& ... fs)
 
 MUSE_NS_END
 
-#define __pred_of(...)  MUSE_NS::make_compose(__VA_ARGS__)
+#define __pred_of(...)  ::MUSE_NS::make_compose(__VA_ARGS__)
 
 #endif

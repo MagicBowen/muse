@@ -10,13 +10,13 @@ template<typename ...PROMISES>
 using OptionalPromiseHelper = CompositePromiseHelper<OptionalPromise, PROMISES...>;
 
 template<typename ...PROMISES>
-auto createOptionalPromise(PROMISES&&... promises)
+auto make_optional_promise(PROMISES&&... promises)
 {
     return OptionalPromiseHelper<std::decay_t<PROMISES>...>(std::forward<PROMISES>(promises)...);
 }
 
 MUSE_NS_END
 
-#define __opt(...)  createOptionalPromise(__VA_ARGS__)
+#define __opt(...)    ::MUSE_NS::make_optional_promise(__VA_ARGS__)
 
 #endif

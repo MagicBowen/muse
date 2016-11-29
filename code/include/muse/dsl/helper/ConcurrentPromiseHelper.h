@@ -10,14 +10,14 @@ template<typename ...PROMISES>
 using ConcurrentPromiseHelper = CompositePromiseHelper<ConcurrentPromise, PROMISES...>;
 
 template<typename ...PROMISES>
-auto createConcurrentPromise(PROMISES&&... promises)
+auto make_concurrent_promise(PROMISES&&... promises)
 {
     return ConcurrentPromiseHelper<std::decay_t<PROMISES>...>(std::forward<PROMISES>(promises)...);
 }
 
 MUSE_NS_END
 
-#define __con(...)  createConcurrentPromise(__VA_ARGS__)
+#define __con(...)  ::MUSE_NS::make_concurrent_promise(__VA_ARGS__)
 
 #endif
 

@@ -10,14 +10,14 @@ template<typename ...FACTS>
 using FactAnyHelper = CompositeFactHelper<FactAny, FACTS...>;
 
 template<typename ...FACTS>
-auto createFactAny(FACTS&&... facts)
+auto make_fact_any(FACTS&&... facts)
 {
     return FactAnyHelper<std::decay_t<FACTS>...>(std::forward<FACTS>(facts)...);
 }
 
 MUSE_NS_END
 
-#define __any(...)  createFactAny(__VA_ARGS__)
+#define __any(...)    ::MUSE_NS::make_fact_any(__VA_ARGS__)
 
 #endif
 

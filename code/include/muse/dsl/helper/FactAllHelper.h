@@ -10,14 +10,14 @@ template<typename ...FACTS>
 using FactAllHelper = CompositeFactHelper<FactAll, FACTS...>;
 
 template<typename ...FACTS>
-auto createFactAll(FACTS&&... facts)
+auto make_fact_all(FACTS&&... facts)
 {
     return FactAllHelper<std::decay_t<FACTS>...>(std::forward<FACTS>(facts)...);
 }
 
 MUSE_NS_END
 
-#define __all(...)  createFactAll(__VA_ARGS__)
+#define __all(...)    ::MUSE_NS::make_fact_all(__VA_ARGS__)
 
 #endif
 

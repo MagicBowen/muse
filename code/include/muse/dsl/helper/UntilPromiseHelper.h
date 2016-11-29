@@ -25,6 +25,6 @@ private:
 
 MUSE_NS_END
 
-#define __until(UNTIL, PROMISE) UntilPromiseHelper<decltype(UNTIL), decltype(PROMISE)>(UNTIL, PROMISE)
+#define __until(UNTIL, PROMISE)   ::MUSE_NS::UntilPromiseHelper<decltype(UNTIL), decltype(PROMISE)>(UNTIL, PROMISE)
 
 #endif

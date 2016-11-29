@@ -25,6 +25,6 @@ private:
 
 MUSE_NS_END
 
-#define __daemon(DAEMON, PROMISE) DaemonPromiseHelper<decltype(DAEMON), decltype(PROMISE)>(DAEMON, PROMISE)
+#define __daemon(DAEMON, PROMISE)   ::MUSE_NS::DaemonPromiseHelper<decltype(DAEMON), decltype(PROMISE)>(DAEMON, PROMISE)
 
 #endif

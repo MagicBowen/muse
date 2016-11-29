@@ -25,7 +25,7 @@ private:
 
 MUSE_NS_END
 
-#define __exist(...) FactPromiseHelper<ExistPromise, decltype(__VA_ARGS__)>(__VA_ARGS__)
-#define __not_exist(...) FactPromiseHelper<NotExistPromise, decltype(__VA_ARGS__)>(__VA_ARGS__)
+#define __exist(...)     ::MUSE_NS::FactPromiseHelper<ExistPromise, decltype(__VA_ARGS__)>(__VA_ARGS__)
+#define __not_exist(...) ::MUSE_NS::FactPromiseHelper<NotExistPromise, decltype(__VA_ARGS__)>(__VA_ARGS__)
 
 #endif
