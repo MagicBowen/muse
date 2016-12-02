@@ -1,7 +1,7 @@
 #ifndef H50F78FAC_6267_4B32_81BF_4DB0139B7FC8
 #define H50F78FAC_6267_4B32_81BF_4DB0139B7FC8
 
-#include <muse/pred/Average.h>
+#include <stubs/include/algo/Average.h>
 #include <sstream>
 #include <cmath>
 

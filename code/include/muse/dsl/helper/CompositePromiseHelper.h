@@ -9,14 +9,27 @@ MUSE_NS_BEGIN
 template<typename SUPPER, typename ... PROMISES>
 struct CompositePromiseHelper : SUPPER
 {
-    CompositePromiseHelper(PROMISES&& ... ps)
-    : promises(std::forward<PROMISES>(ps) ...)
+    CompositePromiseHelper(const PROMISES& ... ps)
+    : promises(ps...)
     {
         apply(std::integral_constant<size_t, 0>{});
     }
 
     CompositePromiseHelper(const CompositePromiseHelper& rhs)
     : promises(rhs.promises)
+    {
+        this->clear();
+        apply(std::integral_constant<size_t, 0>{});
+    }
+
+    CompositePromiseHelper(PROMISES&& ... ps)
+    : promises(std::move(ps) ...)
+    {
+        apply(std::integral_constant<size_t, 0>{});
+    }
+
+    CompositePromiseHelper(CompositePromiseHelper&& rhs)
+    : promises(std::move(rhs.promises))
     {
         this->clear();
         apply(std::integral_constant<size_t, 0>{});

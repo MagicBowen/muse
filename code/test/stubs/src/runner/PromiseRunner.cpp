@@ -1,6 +1,6 @@
 #include <stubs/include/runner/PromiseRunner.h>
 #include <muse/promise/Promise.h>
-#include <muse/event/EventFetcher.h>
+#include <stubs/include/event/EventFetcher.h>
 #include <muse/event/Event.h>
 #include <muse/base/log.h>
 
@@ -54,7 +54,6 @@ void PromiseRunner::proceed()
 
 void PromiseRunner::terminate()
 {
-    INFO_LOG("Simulation terminate!")
     promise->stop();
     result = (promise->evaluate().isSuccess());
 }

@@ -18,6 +18,16 @@ struct DaemonPromiseHelper : DaemonPromise
     {
     }
 
+    DaemonPromiseHelper(DAEMON&& d, PROMISE&& p)
+    : DaemonPromise(daemon, promise), daemon(std::move(d)), promise(std::move(p))
+    {
+    }
+
+    DaemonPromiseHelper(DaemonPromiseHelper&& rhs)
+    : DaemonPromise(daemon, promise), daemon(std::move(rhs.daemon)), promise(std::move(rhs.promise))
+    {
+    }
+
 private:
     DAEMON daemon;
     PROMISE promise;
@@ -25,6 +35,7 @@ private:
 
 MUSE_NS_END
 
-#define __daemon(DAEMON, PROMISE)   ::MUSE_NS::DaemonPromiseHelper<decltype(DAEMON), decltype(PROMISE)>(DAEMON, PROMISE)
+#define __daemon(DAEMON, PROMISE)     \
+::MUSE_NS::DaemonPromiseHelper<std::decay_t<decltype(DAEMON)>, std::decay_t<decltype(PROMISE)>>(DAEMON, PROMISE)
 
 #endif

@@ -1,8 +1,8 @@
 #ifndef H28CA2765_1052_44AA_8D97_D4D08AC190E7
 #define H28CA2765_1052_44AA_8D97_D4D08AC190E7
 
-#include <muse/pred/MoreThan.h>
-#include <muse/pred/LessThan.h>
+#include <stubs/include/pred/GreaterThan.h>
+#include <stubs/include/pred/LessThan.h>
 
 MUSE_NS_BEGIN
 

@@ -9,12 +9,17 @@ MUSE_NS_BEGIN
 template<typename PRED>
 struct NotPred
 {
-    NotPred(PRED&& pred)
+    NotPred(const PRED& pred)
     : pred(pred)
     {
     }
 
-    bool operator()(ARG_TYPE(PRED) value) const
+    NotPred(PRED&& pred)
+    : pred(std::move(pred))
+    {
+    }
+
+    bool operator()(const ARG_TYPE(PRED)& value) const
     {
         return !pred(value);
     }
@@ -39,6 +44,6 @@ auto make_not_pred(PRED&& pred)
 
 MUSE_NS_END
 
-#define __not_pred(...)    ::MUSE_NS::make_not_pred(__VA_ARGS__)
+#define __not(...)    ::MUSE_NS::make_not_pred(__VA_ARGS__)
 
 #endif

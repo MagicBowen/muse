@@ -19,13 +19,23 @@ struct FactPromiseHelper : PROMISE
     {
     }
 
+    FactPromiseHelper(FACT&& f)
+    : PROMISE(fact), fact(std::move(f))
+    {
+    }
+
+    FactPromiseHelper(FactPromiseHelper&& rhs)
+    : PROMISE(fact), fact(std::move(rhs.fact))
+    {
+    }
+
 private:
     FACT fact;
 };
 
 MUSE_NS_END
 
-#define __exist(...)     ::MUSE_NS::FactPromiseHelper<ExistPromise, decltype(__VA_ARGS__)>(__VA_ARGS__)
-#define __not_exist(...) ::MUSE_NS::FactPromiseHelper<NotExistPromise, decltype(__VA_ARGS__)>(__VA_ARGS__)
+#define __exist(...)     ::MUSE_NS::FactPromiseHelper<ExistPromise, std::decay_t<decltype(__VA_ARGS__)>>(__VA_ARGS__)
+#define __not_exist(...) ::MUSE_NS::FactPromiseHelper<NotExistPromise, std::decay_t<decltype(__VA_ARGS__)>>(__VA_ARGS__)
 
 #endif

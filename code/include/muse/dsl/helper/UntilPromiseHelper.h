@@ -18,6 +18,16 @@ struct UntilPromiseHelper : UntilPromise
     {
     }
 
+    UntilPromiseHelper(UNTIL&& u, PROMISE&& p)
+    : UntilPromise(until, promise), until(std::move(u)), promise(std::move(p))
+    {
+    }
+
+    UntilPromiseHelper(UntilPromiseHelper&& rhs)
+    : UntilPromise(until, promise), until(std::move(rhs.until)), promise(std::move(rhs.promise))
+    {
+    }
+
 private:
     UNTIL until;
     PROMISE promise;
@@ -25,6 +35,7 @@ private:
 
 MUSE_NS_END
 
-#define __until(UNTIL, PROMISE)   ::MUSE_NS::UntilPromiseHelper<decltype(UNTIL), decltype(PROMISE)>(UNTIL, PROMISE)
+#define __until(UNTIL, PROMISE)    \
+::MUSE_NS::UntilPromiseHelper<std::decay_t<decltype(UNTIL)>, std::decay_t<decltype(PROMISE)>>(UNTIL, PROMISE)
 
 #endif

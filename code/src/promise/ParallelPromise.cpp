@@ -5,14 +5,14 @@ MUSE_NS_BEGIN
 
 void ParallelPromise::start()
 {
-    foreach(promises, [](Promise* p){p->start();});
+    foreach(promises, [](auto p){p->start();});
 }
 
 void ParallelPromise::stop()
 {
     if(result.isFixed()) return;
 
-    foreach(promises, [](Promise* p){ p-> stop(); });
+    foreach(promises, [](auto p){ p-> stop(); });
 
     updateResult();
 }
@@ -21,7 +21,7 @@ void ParallelPromise::onEvent(const Event& event)
 {
     if(result.isFixed()) return;
 
-    foreach(promises, [&event](Promise* p){ p->onEvent(event); });
+    foreach(promises, [&event](auto p){ p->onEvent(event); });
 
     updateResult();
 }

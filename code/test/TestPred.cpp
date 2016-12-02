@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
-#include <muse/pred/Between.h>
-#include <muse/pred/Variance.h>
 #include <muse/pred/Compose.h>
 #include <muse/pred/NotPred.h>
-#include <iostream>
+#include <stubs/include/pred/Between.h>
+#include <stubs/include/algo/Variance.h>
 
 USING_MUSE_NS;
 
@@ -19,7 +18,7 @@ TEST(TestPred, should_out_of_range_number_not_between_in_bounds)
 
 TEST(TestPred, should_not_pred_return_the_negative_result)
 {
-    ASSERT_TRUE(__not_pred(Between<int>(1, 3))(3));
+    ASSERT_TRUE(__not(Between<int>(1, 3))(3));
 }
 
 TEST(TestPred, should_get_average_one_by_one)
@@ -42,7 +41,7 @@ TEST(TestPred, should_get_variance_one_by_one)
 
 TEST(TestPred, should_compose_variance_and_pred)
 {
-    auto pred = __pred_of(Variance<int, double>(), LessThan<double>(3));
+    auto pred = __compose(Variance<int, double>(), LessThan<double>(3));
 
     ASSERT_TRUE(pred(3));
     ASSERT_TRUE(pred(5));
@@ -51,11 +50,9 @@ TEST(TestPred, should_compose_variance_and_pred)
 
 TEST(TestPred, should_compose_variance_and_not_pred)
 {
-    auto pred = __pred_of(Variance<int, double>(), __not_pred(LessThan<double>(3)));
+    auto pred = __compose(Variance<int, double>(), __not(LessThan<double>(3)));
 
     ASSERT_FALSE(pred(3));
     ASSERT_FALSE(pred(5));
     ASSERT_FALSE(pred(1));
-
-    std::cout << pred.info() << std::endl;
 }

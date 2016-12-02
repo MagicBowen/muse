@@ -18,12 +18,22 @@ struct ClosureFactHelper : ClosureFact
     {
     }
 
+    ClosureFactHelper(FACT&& f)
+    : ClosureFact(fact), fact(std::move(f))
+    {
+    }
+
+    ClosureFactHelper(ClosureFactHelper&& rhs)
+    : ClosureFact(fact), fact(std::move(rhs.fact))
+    {
+    }
+
 private:
     FACT fact;
 };
 
 MUSE_NS_END
 
-#define __closure(...)  ::MUSE_NS::ClosureFactHelper<decltype(__VA_ARGS__)>(__VA_ARGS__)
+#define __closure(...)  ::MUSE_NS::ClosureFactHelper<std::decay_t<decltype(__VA_ARGS__)>>(__VA_ARGS__)
 
 #endif

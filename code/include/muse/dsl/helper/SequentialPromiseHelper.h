@@ -9,14 +9,26 @@ MUSE_NS_BEGIN
 template<typename ... PROMISES>
 struct SequentialPromiseHelper : CompositePromiseHelper<SequentialPromise, PROMISES...>
 {
-    SequentialPromiseHelper(PROMISES&& ... ps)
-    : CompositePromiseHelper<SequentialPromise, PROMISES...>(std::forward<PROMISES>(ps) ...)
+    SequentialPromiseHelper(const PROMISES& ... ps)
+    : CompositePromiseHelper<SequentialPromise, PROMISES...>(ps...)
     {
         this->reset();
     }
 
     SequentialPromiseHelper(const SequentialPromiseHelper& rhs)
     : CompositePromiseHelper<SequentialPromise, PROMISES...>(rhs)
+    {
+        this->reset();
+    }
+
+    SequentialPromiseHelper(PROMISES&& ... ps)
+    : CompositePromiseHelper<SequentialPromise, PROMISES...>(std::move(ps) ...)
+    {
+        this->reset();
+    }
+
+    SequentialPromiseHelper(SequentialPromiseHelper&& rhs)
+    : CompositePromiseHelper<SequentialPromise, PROMISES...>(std::move(rhs))
     {
         this->reset();
     }

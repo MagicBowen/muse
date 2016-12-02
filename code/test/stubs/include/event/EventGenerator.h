@@ -2,7 +2,7 @@
 #define H263BECEA_1079_475A_A842_56D739E5252D
 
 #include <stubs/include/event/FakeEvent.h>
-#include <muse/event/EventFetcher.h>
+#include <stubs/include/event/EventFetcher.h>
 #include <initializer_list>
 #include <list>
 
