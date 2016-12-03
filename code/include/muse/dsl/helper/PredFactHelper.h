@@ -10,17 +10,18 @@ template<typename FACT>
 struct PredFactHelper : FACT
 {
     using FACT::FACT;
+    using ArgType = typename FACT::PredArgType;
 
     template<typename PRED>
     PredFactHelper& predOf(PRED&& p)
     {
-        pred.reset(new PredAdapter<std::decay_t<PRED>, typename FACT::PredType>(std::forward<PRED>(p)));
+        pred.reset(new PredAdapter<std::decay_t<PRED>, ArgType>(std::forward<PRED>(p)));
         this->addPred(*(pred.get()));
         return *this;
     }
 
 private:
-    std::shared_ptr<Pred<typename FACT::PredType>> pred;
+    std::shared_ptr<Pred<ArgType>> pred;
 };
 
 MUSE_NS_END

@@ -20,7 +20,7 @@ struct BASE_FACT(FACT) : BASE                       \
 {                                                   \
     using BASE::BASE;                               \
 protected:                                          \
-    using PredType = void;                          \
+    using PredArgType = void;                       \
 private:                                            \
     NAME_FUNC(FACT)                                 \
 };                                                  \
@@ -29,11 +29,11 @@ struct FACT : BASE_FACT(FACT)
 //////////////////////////////////////////////////////
 #define DEF_PRED_FACT_BASE_OF(FACT, BASE, PRED_T)   \
 struct BASE_FACT(FACT) : BASE                       \
-                       , protected Preds<PRED_T>    \
+                       , Preds<PRED_T>              \
 {                                                   \
     using BASE::BASE;                               \
 protected:                                          \
-    using PredType = PRED_T;                        \
+    using PredArgType = PRED_T;                     \
 private:                                            \
     NAME_FUNC(FACT)                                 \
 };                                                  \

@@ -3,6 +3,7 @@
 
 #include <muse/pred/Pred.h>
 #include <muse/base/StdExt.h>
+#include <string>
 #include <vector>
 
 MUSE_NS_BEGIN
