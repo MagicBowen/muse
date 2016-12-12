@@ -31,6 +31,8 @@ protected:
 
     std::string predInfo() const
     {
+        if(preds.empty()) return std::string("predicate none");
+
         std::string info("predicate that ");
         foreach(preds, [&info](auto p){ info += (p->info() + std::string(";")); });
         return info;
