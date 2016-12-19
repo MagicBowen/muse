@@ -10,7 +10,7 @@ struct ParallelPromise : CompositePromise
 private:
     OVERRIDE(void start());
     OVERRIDE(void stop());
-    OVERRIDE(void onEvent(const Event&));
+    OVERRIDE(void handle(const Event&));
     OVERRIDE(Result evaluate() const);
 
 private:

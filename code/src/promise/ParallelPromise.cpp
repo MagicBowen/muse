@@ -17,11 +17,11 @@ void ParallelPromise::stop()
     updateResult();
 }
 
-void ParallelPromise::onEvent(const Event& event)
+void ParallelPromise::handle(const Event& event)
 {
     if(result.isFixed()) return;
 
-    foreach(promises, [&event](auto p){ p->onEvent(event); });
+    foreach(promises, [&event](auto p){ p->handle(event); });
 
     updateResult();
 }

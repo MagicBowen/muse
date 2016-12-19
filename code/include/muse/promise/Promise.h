@@ -12,7 +12,7 @@ DEF_INTERFACE(Promise)
 {
     ABSTRACT(void start());
     ABSTRACT(void stop());
-    ABSTRACT(void onEvent(const Event&));
+    ABSTRACT(void handle(const Event&));
     ABSTRACT(Result evaluate() const);
 };
 

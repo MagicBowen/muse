@@ -2,20 +2,15 @@
 #define HC626219A_60D0_4BE2_A8BA_6C8F164C301C
 
 #include <muse/promise/CompositePromise.h>
-#include <initializer_list>
 
 MUSE_NS_BEGIN
 
 struct SequentialPromise : CompositePromise
 {
-    SequentialPromise() {}
-
-    explicit SequentialPromise(std::initializer_list<Promise*>);
-
 private:
     OVERRIDE(void start());
     OVERRIDE(void stop());
-    OVERRIDE(void onEvent(const Event&));
+    OVERRIDE(void handle(const Event&));
     OVERRIDE(Result evaluate() const);
 
 private:
@@ -29,8 +24,8 @@ private:
     bool gotoNext();
     Promise& current();
 
-protected:
-    void reset();
+private:
+    OVERRIDE(void reset());
 
 private:
     Promises::iterator currentPromise;

@@ -68,7 +68,7 @@ bool PromiseRunner::processEvent(const Event& event)
         return false;
     }
 
-    promise->onEvent(event);
+    promise->handle(event);
     if(promise->evaluate().isFixed())
     {
         INFO_LOG("Simulation is finish!");

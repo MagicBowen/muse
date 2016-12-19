@@ -6,33 +6,8 @@
 
 MUSE_NS_BEGIN
 
-template<typename ... PROMISES>
-struct SequentialPromiseHelper : CompositePromiseHelper<SequentialPromise, PROMISES...>
-{
-    SequentialPromiseHelper(const PROMISES& ... ps)
-    : CompositePromiseHelper<SequentialPromise, PROMISES...>(ps...)
-    {
-        this->reset();
-    }
-
-    SequentialPromiseHelper(const SequentialPromiseHelper& rhs)
-    : CompositePromiseHelper<SequentialPromise, PROMISES...>(rhs)
-    {
-        this->reset();
-    }
-
-    SequentialPromiseHelper(PROMISES&& ... ps)
-    : CompositePromiseHelper<SequentialPromise, PROMISES...>(std::move(ps) ...)
-    {
-        this->reset();
-    }
-
-    SequentialPromiseHelper(SequentialPromiseHelper&& rhs)
-    : CompositePromiseHelper<SequentialPromise, PROMISES...>(std::move(rhs))
-    {
-        this->reset();
-    }
-};
+template<typename ...PROMISES>
+using SequentialPromiseHelper = CompositePromiseHelper<SequentialPromise, PROMISES...>;
 
 template<typename ...PROMISES>
 auto make_sequential_promise(PROMISES&&... promises)

@@ -4,11 +4,6 @@
 
 MUSE_NS_BEGIN
 
-OptionalPromise::OptionalPromise(std::initializer_list<Promise*> promises)
-{
-    foreach(promises, [this](Promise* promise){ addPromise(*promise); });
-}
-
 bool OptionalPromise::isFailed() const
 {
     return allof(promises, [](Promise* p){ return p->evaluate().isFailed(); });

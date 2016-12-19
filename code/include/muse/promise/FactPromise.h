@@ -15,7 +15,7 @@ struct FactPromise : Promise
 private:
     OVERRIDE(void start());
     OVERRIDE(void stop());
-    OVERRIDE(void onEvent(const Event&));
+    OVERRIDE(void handle(const Event&));
 
 private:
     void onStarted();

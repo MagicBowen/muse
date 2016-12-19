@@ -10,6 +10,7 @@
 #include <stubs/include/pred/LessThan.h>
 #include <stubs/include/pred/GreaterThan.h>
 #include <stubs/include/pred/EqualTo.h>
+#include <muse/listener/PromiseListener.h>
 
 USING_MUSE_NS;
 
@@ -240,4 +241,30 @@ TEST_F(TestPromise, should_composed_promise_success_when_all_promise_success)
                                , promiseSegment));
 
     ASSERT_TRUE(verify(promise));
+}
+
+TEST_F(TestPromise, should_listen_the_promise_state)
+{
+    prepareEvents({E_DISTANCE(11), E_DISTANCE(9), E_DISTANCE(8), E_DISTANCE(5), E_DISTANCE(4)});
+
+    auto promise = __seq( __exist(__fact(Distance).predOf(LessThan<double>(10)))
+                        , __exist(__fact(Distance).predOf(EqualTo<int>(5))));
+
+    int EventCount = 0;
+    struct EventCountListener : PromiseListener
+    {
+        EventCountListener(int& count) : count(count){}
+    private:
+        OVERRIDE(void onEvent(const Event&))
+        {
+            ++count;
+        }
+    private:
+        int& count;
+    }counter(EventCount);
+
+    auto listenedPromise = __listen(counter, promise);
+
+    ASSERT_TRUE(verify(listenedPromise));
+    ASSERT_EQ(4, EventCount);
 }

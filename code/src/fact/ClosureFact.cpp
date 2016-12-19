@@ -12,14 +12,14 @@ bool ClosureFact::isOccurred() const
     return occurred;
 }
 
-void ClosureFact::onStarted()
+void ClosureFact::start()
 {
-    fact.onStarted();
+    fact.start();
 }
 
-void ClosureFact::onStopped()
+void ClosureFact::stop()
 {
-    fact.onStopped();
+    fact.stop();
     occurred = fact.isOccurred();
 }
 

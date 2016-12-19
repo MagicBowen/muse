@@ -3,11 +3,6 @@
 
 MUSE_NS_BEGIN
 
-ConcurrentPromise::ConcurrentPromise(std::initializer_list<Promise*> promises)
-{
-    foreach(promises, [this](auto p){ addPromise(*p); });
-}
-
 bool ConcurrentPromise::isFailed() const
 {
     return anyof(promises, [](auto p){ return p->evaluate().isFailed(); });

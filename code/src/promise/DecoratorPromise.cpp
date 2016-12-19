@@ -20,10 +20,10 @@ void DecoratorPromise::stop()
     terminate();
 }
 
-void DecoratorPromise::onEvent(const Event& event)
+void DecoratorPromise::handle(const Event& event)
 {
-    decorator.onEvent(event);
-    promise.onEvent(event);
+    decorator.handle(event);
+    promise.handle(event);
 
     if(isFinished())
     {

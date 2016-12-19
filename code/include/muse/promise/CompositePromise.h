@@ -11,6 +11,9 @@ struct CompositePromise : Promise
     void clear();
     void addPromise(Promise&);
 
+private:
+    DEFAULT(void, reset());
+
 protected:
     using Promises = std::list<Promise*>;
     std::list<Promise*> promises;

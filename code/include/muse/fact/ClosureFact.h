@@ -10,8 +10,8 @@ struct ClosureFact : Fact
     ClosureFact(Fact&);
 
 private:
-    OVERRIDE(void onStarted());
-    OVERRIDE(void onStopped());
+    OVERRIDE(void start());
+    OVERRIDE(void stop());
     OVERRIDE(void confirm(const Event&));
     OVERRIDE(bool isOccurred() const);
     OVERRIDE(std::string info() const);

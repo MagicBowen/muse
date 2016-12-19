@@ -2,16 +2,11 @@
 #define H3BD6C634_7851_45DF_A9F3_3B72FEA35C86
 
 #include <muse/promise/ParallelPromise.h>
-#include <initializer_list>
 
 MUSE_NS_BEGIN
 
 struct ConcurrentPromise : ParallelPromise
 {
-    ConcurrentPromise() {};
-
-    explicit ConcurrentPromise(std::initializer_list<Promise*>);
-
 private:
     OVERRIDE(bool isFailed() const);
     OVERRIDE(bool isSuccess() const);

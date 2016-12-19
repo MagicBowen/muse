@@ -74,7 +74,7 @@ void FactPromise::stop()
     state->stop(*this);
 }
 
-void FactPromise::onEvent(const Event& event)
+void FactPromise::handle(const Event& event)
 {
     state->onEvent(*this, event);
 }
@@ -82,7 +82,7 @@ void FactPromise::onEvent(const Event& event)
 void FactPromise::onStarted()
 {
     INFO_LOG("Promise is started!");
-    fact.onStarted();
+    fact.start();
 }
 
 void FactPromise::onStopped()
@@ -90,7 +90,7 @@ void FactPromise::onStopped()
     INFO_LOG("Promise is stopped!");
     WARN_LOG("%s", fact.info().c_str());
 
-    fact.onStopped();
+    fact.stop();
 
     result = fact.isOccurred()? Result::SUCCESS : Result::FAILED;
     (result.isSuccess()) ? onSuccess() : onFailed();

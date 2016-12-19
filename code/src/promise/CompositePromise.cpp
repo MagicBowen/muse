@@ -10,6 +10,7 @@ void CompositePromise::clear()
 void CompositePromise::addPromise(Promise& promise)
 {
     promises.push_back(&promise);
+    if(promises.size() == 1) reset();
 }
 
 

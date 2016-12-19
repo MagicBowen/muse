@@ -3,12 +3,6 @@
 
 MUSE_NS_BEGIN
 
-SequentialPromise::SequentialPromise(std::initializer_list<Promise*> promises)
-{
-    foreach(promises, [this](Promise* promise){ addPromise(*promise); });
-    reset();
-}
-
 Promise& SequentialPromise::current()
 {
     return **currentPromise;
@@ -34,7 +28,7 @@ void SequentialPromise::doStop()
     foreach(promises, [](Promise* p){ p-> stop(); });
 }
 
-void SequentialPromise::onEvent(const Event& event)
+void SequentialPromise::handle(const Event& event)
 {
     if(result.isFixed()) return;
 
@@ -49,7 +43,7 @@ Result SequentialPromise::evaluate() const
 
 void SequentialPromise::processEvent(const Event& event)
 {
-    current().onEvent(event);
+    current().handle(event);
 
     switch(current().evaluate().getValue())
     {
