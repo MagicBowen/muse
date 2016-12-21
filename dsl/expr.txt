@@ -1,5 +1,6 @@
 F1: collision.
 F2: stop.
 F3: lane gap predicate that between 0.5m and 2.
-acc: distance to vehicle 1 predicate that less than 3.2 m .
-(F1 && F2) || !F3 -> F4 -> (stop -| acc)->(F7-<F8)
+F4: duration predicate that less than 30 s.
+acc: distance to vehicle 1 predicate that average less than 3.2 m .
+(F1 && F2) -> (F3 -| stop) -> ([acc] -< F4) && collision

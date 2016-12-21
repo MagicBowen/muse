@@ -1,41 +1,50 @@
 grammar Promise;
 
-prog:   (def)* expr;
+prog:   (factdef)* promise;
 
-def:   ID ':' fact END;
+factdef  :   ID ':' fact END;
 
-fact   :   sfact
-       |   pfact
-       ;
+fact     :   sfact
+         |   pfact
+         ;
 
-pfact  : pfdef 'predicate that' pred ;
+pfact    : pfname 'predicate that' algo? pred ;
 
-pfdef  :  'distance to vehicle ' INT
-       |  'duration'
-       |  'lane change'
-       |  'lane gap'
-       ;
+pfname   :  'duration'
+         |  'lane change'
+         |  'lane gap'
+         |  'distance to vehicle ' INT
+         ;
 
-pred   : 'equal to' param
-       | 'less than' param
-       | 'greater than' param
-       | 'between' param 'and' param
-       ;
+pred     : 'equal to' param
+         | 'less than' param
+         | 'greater than' param
+         | 'between' param 'and' param
+         ;
 
-sfact  : 'collision'
-       | 'stop'
-       ;  
+algo     : 'average'
+         | 'variance'
+         ;
 
-expr   :   expr '&&' expr  # con
-       |   expr '||' expr  # opt
-       |   expr '->' expr  # seq
-       |   expr '-|' expr  # until
-       |   expr '-<' expr  # daemon
-       |   '!' ID          # notExist
-       |   ID              # exist
-       |   sfact           # simpleFact  
-       |   '(' expr ')'    # parens
-       ;   
+sfact    : 'collision'
+         | 'stop'
+         ;
+
+basepromise : ID                          # factId
+            | '[' ID ']'                  # closureFactId
+            | sfact                       # factName
+            | '[' sfact ']'               # closureFactName
+            ;         
+
+promise  :   promise '&&' promise         # con
+         |   promise '||' promise         # opt
+         |   promise '->' promise         # seq
+         |   promise '-|' promise         # until
+         |   promise '-<' promise         # daemon
+         |   '!' basepromise              # notExist
+         |   basepromise                  # exist 
+         |   '(' promise ')'              # parens
+         ;   
 
 param  :   value unit* ;
 
