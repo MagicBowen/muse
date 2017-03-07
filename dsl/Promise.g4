@@ -10,7 +10,8 @@ fact     :   sfact
 
 pfact    : pfname 'predicate that' algo? pred ;
 
-pfname   :  'duration'
+pfname   :  'location'
+         |  'duration'
          |  'lane change'
          |  'lane gap'
          |  'distance to vehicle ' INT
