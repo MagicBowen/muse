@@ -62,7 +62,7 @@ class PromiseVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by PromiseParser#lessThanPred.
     def visitLessThanPred(self, ctx:PromiseParser.LessThanPredContext):
         return self.visitChildren(ctx)
-
+        
 
     # Visit a parse tree produced by PromiseParser#greaterThanPred.
     def visitGreaterThanPred(self, ctx:PromiseParser.GreaterThanPredContext):

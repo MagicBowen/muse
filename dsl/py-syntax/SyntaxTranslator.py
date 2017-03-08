@@ -34,38 +34,176 @@ class PromiseSyntaxVisitor( PromiseVisitor ):
         self.factIdTable = []
         self.result = {}
 
+    # result is a dictionary generated when visiting
     def get_result(self):
         return self.result
 
-    def visitPromisedef(self, ctx):
-        self.result = ctx.promise().accept(self)
 
-    def visitCollisionFact(self, ctx):
-        print('visitCollisionFact in PromiseSyntaxVisitor')
+    # Visit a parse tree produced by PromiseParser#prog.
+    def visitProg(self, ctx:PromiseParser.ProgContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#factdef.
+    def visitFactdef(self, ctx:PromiseParser.FactdefContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#fact.
+    def visitFact(self, ctx:PromiseParser.FactContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#pfact.
+    def visitPfact(self, ctx:PromiseParser.PfactContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#locationFact.
+    def visitLocationFact(self, ctx:PromiseParser.LocationFactContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#durationFact.
+    def visitDurationFact(self, ctx:PromiseParser.DurationFactContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#laneChangeFact.
+    def visitLaneChangeFact(self, ctx:PromiseParser.LaneChangeFactContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#laneGapFact.
+    def visitLaneGapFact(self, ctx:PromiseParser.LaneGapFactContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#distanceToFact.
+    def visitDistanceToFact(self, ctx:PromiseParser.DistanceToFactContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#equalToPred.
+    def visitEqualToPred(self, ctx:PromiseParser.EqualToPredContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#lessThanPred.
+    def visitLessThanPred(self, ctx:PromiseParser.LessThanPredContext):
+        return self.visitChildren(ctx)
+        
+
+    # Visit a parse tree produced by PromiseParser#greaterThanPred.
+    def visitGreaterThanPred(self, ctx:PromiseParser.GreaterThanPredContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#betweenPred.
+    def visitBetweenPred(self, ctx:PromiseParser.BetweenPredContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#averageAlgo.
+    def visitAverageAlgo(self, ctx:PromiseParser.AverageAlgoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#varianceAlgo.
+    def visitVarianceAlgo(self, ctx:PromiseParser.VarianceAlgoContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#collisionFact.
+    def visitCollisionFact(self, ctx:PromiseParser.CollisionFactContext):
         return {'name' : 'collision'}
 
-    def visitStopFact(self, ctx):
-        print('visitStopFact in PromiseSyntaxVisitor')
+
+    # Visit a parse tree produced by PromiseParser#stopFact.
+    def visitStopFact(self, ctx:PromiseParser.StopFactContext):
         return {'name' : 'stop'}
 
-    def visitExist(self, ctx):
-        print('visitExist in PromiseSyntaxVisitor')
+
+    # Visit a parse tree produced by PromiseParser#promisedef.
+    def visitPromisedef(self, ctx:PromiseParser.PromisedefContext):
+        self.result = ctx.promise().accept(self)
+
+
+    # Visit a parse tree produced by PromiseParser#exist.
+    def visitExist(self, ctx:PromiseParser.ExistContext):
         fact = self.visitChildren(ctx)
         return {'type' : 'exist', 'fact' : fact}
 
-    def visitFactdef(self, ctx):
-        id = ctx.ID().getText()
-        if id in self.factIdTable:
-            raise SyntaxError("Error: duplicate fact id {0}".format(id))
-        else:
-            self.factIdTable.append(id)
-        return 0
 
-    def visitFactId(self, ctx):
-        return self.__checkFactIdDefined(ctx)
+    # Visit a parse tree produced by PromiseParser#parens.
+    def visitParens(self, ctx:PromiseParser.ParensContext):
+        return self.visitChildren(ctx)
 
-    def visitClosureFactId(self, ctx):
-        return self.__checkFactIdDefined(ctx)
+
+    # Visit a parse tree produced by PromiseParser#sequential.
+    def visitSequential(self, ctx:PromiseParser.SequentialContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#concurrent.
+    def visitConcurrent(self, ctx:PromiseParser.ConcurrentContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#optional.
+    def visitOptional(self, ctx:PromiseParser.OptionalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#until.
+    def visitUntil(self, ctx:PromiseParser.UntilContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#notExist.
+    def visitNotExist(self, ctx:PromiseParser.NotExistContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#daemon.
+    def visitDaemon(self, ctx:PromiseParser.DaemonContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#factId.
+    def visitFactId(self, ctx:PromiseParser.FactIdContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#closureFactId.
+    def visitClosureFactId(self, ctx:PromiseParser.ClosureFactIdContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#factName.
+    def visitFactName(self, ctx:PromiseParser.FactNameContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#closureFactName.
+    def visitClosureFactName(self, ctx:PromiseParser.ClosureFactNameContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#param.
+    def visitParam(self, ctx:PromiseParser.ParamContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#value.
+    def visitValue(self, ctx:PromiseParser.ValueContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by PromiseParser#unit.
+    def visitUnit(self, ctx:PromiseParser.UnitContext):
+        return self.visitChildren(ctx)
+
 
     def __checkFactIdDefined(self, ctx):
         id = ctx.ID().getText()

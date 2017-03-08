@@ -3,3 +3,4 @@ project/.cproject
 project/.project
 project/.settings/
 dsl/build
+dsl/py-syntax/__pycache__

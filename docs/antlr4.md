@@ -94,79 +94,14 @@ $ pip3 install antlr4-python3-runtime
 
 ~~~
 $ cd muse/dsl
-$ antlr4 -visitor -Dlanguage=Python3 Promise.g4 -o ./py-check
-~~~
-
-### check syntax
-
-In dsl/py-check folder, already exists two python files for promise syntax check.
-
-~~~python
-# PromiseSyntaxVisitor.py
-
-from PromiseVisitor import PromiseVisitor
-from PromiseParser import PromiseParser
-
-class PromiseSyntaxVisitor(PromiseVisitor):
-    def __init__(self):
-        self.factIdTable = []
-
-    def visitFactdef(self, ctx):
-        id = ctx.ID().getText()
-        if id in self.factIdTable:
-            raise SyntaxError("Error: duplicate fact id {0}".format(id))
-        else:
-            self.factIdTable.append(id)
-        return 0
-
-    def visitFactId(self, ctx):
-        return self.__checkFactIdDefined(ctx)
-
-    def visitClosureFactId(self, ctx):
-        return self.__checkFactIdDefined(ctx)
-
-    def __checkFactIdDefined(self, ctx):
-        id = ctx.ID().getText()
-        if id not in self.factIdTable:
-            raise SyntaxError("Error: undefined fact id {0}".format(id))
-        return 0
-~~~
-
-~~~python
-# SyntaxChecker.py
-
-import os
-import sys
-from antlr4 import *
-from antlr4.InputStream import InputStream
-from PromiseLexer import PromiseLexer
-from PromiseParser import PromiseParser
-from PromiseSyntaxVisitor import PromiseSyntaxVisitor
-
-def main():
-    input_stream = FileStream(sys.argv[1])
-    lexer = PromiseLexer(input_stream)
-    token_stream = CommonTokenStream(lexer)
-    parser = PromiseParser(token_stream)
-    tree = parser.prog()
-
-    visitor = PromiseSyntaxVisitor()
-    visitor.visit(tree)
-
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("Usage: python {0} <syntax file>".format(os.path.basename(__file__)))
-        sys.exit(1)
-
-    main()
-    print('parse ok!')
+$ antlr4 -visitor -Dlanguage=Python3 Promise.g4 -o ./py-syntax
 ~~~
 
 ### test
 
 ~~~
-cd py-check
-$ python3 SyntaxChecker.py ../expr.txt
+cd py-syntax
+$ python3 TestSyntaxTranslator.py
 parse ok!
 ~~~
 
