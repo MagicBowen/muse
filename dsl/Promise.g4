@@ -10,32 +10,32 @@ fact     :   sfact
 
 pfact    : pfname 'predicate that' algo? pred ;
 
-pfname   :  'location'
-         |  'duration'
-         |  'lane change'
-         |  'lane gap'
-         |  'distance to vehicle' INT
+pfname   :  'location'                    # locationFact
+         |  'duration'                    # durationFact
+         |  'lane change'                 # laneChangeFact
+         |  'lane gap'                    # laneGapFact
+         |  'distance to vehicle' INT     # distanceToFact
          ;
 
-pred     : 'equal to' param
-         | 'less than' param
-         | 'greater than' param
-         | 'between' param 'and' param
+pred     : 'equal to' param               # equalToPred
+         | 'less than' param              # lessThanPred
+         | 'greater than' param           # greaterThanPred
+         | 'between' param 'and' param    # betweenPred
          ;
 
-algo     : 'average'
-         | 'variance'
+algo     : 'average'                      # averageAlgo
+         | 'variance'                     # varianceAlgo
          ;
 
-sfact    : 'collision'
-         | 'stop'
+sfact    : 'collision'                    # collisionFact
+         | 'stop'                         # stopFact
          ;
 
 promisedef  : 'promise' ':' promise END;  
 
-promise  :   promise '&&' promise         # con
-         |   promise '||' promise         # opt
-         |   promise '->' promise         # seq
+promise  :   promise '&&' promise         # concurrent
+         |   promise '||' promise         # optional
+         |   promise '->' promise         # sequential
          |   promise '-|' promise         # until
          |   promise '-<' promise         # daemon
          |   '!' basepromise              # notExist
