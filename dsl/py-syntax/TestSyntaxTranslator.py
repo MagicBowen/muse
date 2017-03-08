@@ -27,12 +27,24 @@ class TestSyntaxTranslator(unittest.TestCase):
         expect = '''{"type": "exist", "fact": {"name": "collision"}}'''
         self.assert_json(input, expect)
 
-    # def test_concurrent_promise(self):
-    #     input = '''promise : collision && stop.'''
-    #     expect = '''{"type" : "sequential",
-    #                  "promises" : [{"type": "exist", "fact": {"name": "collision"}},
-    #                                {"type": "exist", "fact": {"name": "stop"}}]}'''
-    #     self.assert_json(input, expect)
+    def test_concurrent_promise(self):
+        input = '''promise : collision && stop.'''
+        expect = '''{"type" : "concurrent",
+                     "promises" : [ {"type": "exist", "fact": {"name": "collision"}},
+                                    {"type": "exist", "fact": {"name": "stop"}}
+                                  ]
+                    }'''
+        self.assert_json(input, expect)
+
+
+    def test_sequential_promise(self):
+        input = '''promise : collision -> stop.'''
+        expect = '''{"type" : "sequential",
+                     "promises" : [ {"type": "exist", "fact": {"name": "collision"}},
+                                    {"type": "exist", "fact": {"name": "stop"}}
+                                  ]
+                    }'''
+        self.assert_json(input, expect)
 
 
 if __name__ == '__main__':

@@ -137,37 +137,53 @@ class PromiseSyntaxVisitor( PromiseVisitor ):
 
     # Visit a parse tree produced by PromiseParser#parens.
     def visitParens(self, ctx:PromiseParser.ParensContext):
-        return self.visitChildren(ctx)
+        return ctx.promise().accept(self)
 
 
     # Visit a parse tree produced by PromiseParser#sequential.
     def visitSequential(self, ctx:PromiseParser.SequentialContext):
-        return self.visitChildren(ctx)
+        promises = []
+        promises.append(ctx.promise(0).accept(self))
+        promises.append(ctx.promise(1).accept(self))
+        return {'type' : 'sequential', 'promises' : promises}
 
 
     # Visit a parse tree produced by PromiseParser#concurrent.
     def visitConcurrent(self, ctx:PromiseParser.ConcurrentContext):
-        return self.visitChildren(ctx)
+        promises = []
+        promises.append(ctx.promise(0).accept(self))
+        promises.append(ctx.promise(1).accept(self))
+        return {'type' : 'concurrent', 'promises' : promises}
 
 
     # Visit a parse tree produced by PromiseParser#optional.
     def visitOptional(self, ctx:PromiseParser.OptionalContext):
-        return self.visitChildren(ctx)
+        promises = []
+        promises.append(ctx.promise(0).accept(self))
+        promises.append(ctx.promise(1).accept(self))
+        return {'type' : 'optional', 'promises' : promises}
 
 
     # Visit a parse tree produced by PromiseParser#until.
     def visitUntil(self, ctx:PromiseParser.UntilContext):
-        return self.visitChildren(ctx)
+        promises = []
+        promises.append(ctx.promise(0).accept(self))
+        promises.append(ctx.promise(1).accept(self))
+        return {'type' : 'until', 'promises' : promises}
 
 
     # Visit a parse tree produced by PromiseParser#notExist.
     def visitNotExist(self, ctx:PromiseParser.NotExistContext):
-        return self.visitChildren(ctx)
+        fact = self.visitChildren(ctx)
+        return {'type' : 'notexist', 'fact' : fact}
 
 
     # Visit a parse tree produced by PromiseParser#daemon.
     def visitDaemon(self, ctx:PromiseParser.DaemonContext):
-        return self.visitChildren(ctx)
+        promises = []
+        promises.append(ctx.promise(0).accept(self))
+        promises.append(ctx.promise(1).accept(self))
+        return {'type' : 'daemon', 'promises' : promises}
 
 
     # Visit a parse tree produced by PromiseParser#factId.
