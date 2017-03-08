@@ -187,10 +187,13 @@ $ antlr4 -visitor -Dlanguage=Cpp Promise.g4 -o ./cpp-syntax
 
 ### test
 
+CMakeLists.txt is in the dsl/cpp-syntax folder, you need modify the path of antlr4-cpp-runtime in it.
+
 ~~~
 $ mkdir build
 $ cd build
 cmake ../cpp-syntax
 make
+./promise_dsl ../expr.txt
 ~~~
 

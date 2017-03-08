@@ -1,6 +1,6 @@
 grammar Promise;
 
-prog:   (factdef)* promise;
+prog:   (factdef)* promisedef;
 
 factdef  :   ID ':' fact END;
 
@@ -14,7 +14,7 @@ pfname   :  'location'
          |  'duration'
          |  'lane change'
          |  'lane gap'
-         |  'distance to vehicle ' INT
+         |  'distance to vehicle' INT
          ;
 
 pred     : 'equal to' param
@@ -31,11 +31,7 @@ sfact    : 'collision'
          | 'stop'
          ;
 
-basepromise : ID                          # factId
-            | '[' ID ']'                  # closureFactId
-            | sfact                       # factName
-            | '[' sfact ']'               # closureFactName
-            ;         
+promisedef  : 'promise' ':' promise END;  
 
 promise  :   promise '&&' promise         # con
          |   promise '||' promise         # opt
@@ -45,7 +41,13 @@ promise  :   promise '&&' promise         # con
          |   '!' basepromise              # notExist
          |   basepromise                  # exist 
          |   '(' promise ')'              # parens
-         ;   
+         ;         
+
+basepromise : ID                          # factId
+            | '[' ID ']'                  # closureFactId
+            | sfact                       # factName
+            | '[' sfact ']'               # closureFactName
+            ;          
 
 param  :   value unit* ;
 
