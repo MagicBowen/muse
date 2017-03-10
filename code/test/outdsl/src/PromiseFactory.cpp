@@ -246,10 +246,9 @@ namespace
     Promise* createDecoratePromise(const Value& json)
     {
         const Value& value = json["promises"];
-        Promise* p0 = createPromise(value[0]);
-        Promise* p1 = createPromise(value[1]);
-        DecoratorPromise* promise = new PROMISE(*p0, *p1);
-        return promise;
+        Promise* promise = createPromise(value[0]);
+        Promise* decorator = createPromise(value[1]);
+        return new PROMISE(*decorator, *promise);
     }
 
     Promise* createDaemonPromise(const Value& json)

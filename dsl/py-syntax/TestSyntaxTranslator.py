@@ -8,7 +8,6 @@ class TestSyntaxTranslator(unittest.TestCase):
     def setUp(self):
         pass
 
-
     def debug(self, json_str):
         temp = json.loads(json_str)
         print(json.dumps(temp, indent = 4))
@@ -166,15 +165,15 @@ class TestSyntaxTranslator(unittest.TestCase):
                     promise : !collision -< (f3 -> ([f1] && [f2]) -| f4).'''
 
         expect = '''{ "type"     : "daemon",
-                      "promises" : [ { "type" : "notexist", "fact" : {"name" : "collision"}},
-                                     { "type" : "until",
+                      "promises" : [ { "type" : "until",
                                        "promises" : [ { "type" : "sequential" , "promises" : [ { "type" : "exist" , "fact" : {"name" : "lanechange", "pred" : {"name" : "equalto", "param" : 3}}},
                                                                                                { "type" : "concurrent", "promises" : [ { "type" : "exist", "fact" : {"name" : "distance", "param" : 2, "closure" : true, "algo" : "average", "pred" : {"name" : "between", "param" : [4, 10]}}},
                                                                                                                                        { "type" : "exist", "fact" : {"name" : "lanegap", "closure" : true, "algo" : "variance", "pred" : {"name" : "greaterthan", "param" : 1.5}}}
                                                                                                                                      ]}
                                                                                              ]},
                                                       { "type" : "exist", "fact" : {"name" : "stop"}}
-                                                    ]}
+                                                    ]},
+                                     { "type" : "notexist", "fact" : {"name" : "collision"}}
                                    ]
 
                     } 

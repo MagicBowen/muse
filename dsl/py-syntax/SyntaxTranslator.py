@@ -192,8 +192,8 @@ class PromiseSyntaxVisitor( PromiseVisitor ):
     # Visit a parse tree produced by PromiseParser#daemon.
     def visitDaemon(self, ctx:PromiseParser.DaemonContext):
         promises = []
-        promises.append(ctx.promise(0).accept(self))
         promises.append(ctx.promise(1).accept(self))
+        promises.append(ctx.promise(0).accept(self))
         return {'type' : 'daemon', 'promises' : promises}
 
 
