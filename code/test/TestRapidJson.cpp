@@ -3,7 +3,7 @@
 
 using namespace rapidjson;
 
-TEST(TestOutDsl, should_parse_json_correctly)
+TEST(TestRapidJson, should_parse_json_correctly)
 {
     const char* json = R"({
                             "hello": "world",

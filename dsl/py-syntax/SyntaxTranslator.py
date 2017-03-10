@@ -189,18 +189,18 @@ class PromiseSyntaxVisitor( PromiseVisitor ):
         return {'type' : 'until', 'promises' : promises}
 
 
-    # Visit a parse tree produced by PromiseParser#notExist.
-    def visitNotExist(self, ctx:PromiseParser.NotExistContext):
-        fact = self.visitChildren(ctx)
-        return {'type' : 'notexist', 'fact' : fact}
-
-
     # Visit a parse tree produced by PromiseParser#daemon.
     def visitDaemon(self, ctx:PromiseParser.DaemonContext):
         promises = []
         promises.append(ctx.promise(0).accept(self))
         promises.append(ctx.promise(1).accept(self))
         return {'type' : 'daemon', 'promises' : promises}
+
+
+    # Visit a parse tree produced by PromiseParser#notExist.
+    def visitNotExist(self, ctx:PromiseParser.NotExistContext):
+        fact = self.visitChildren(ctx)
+        return {'type' : 'notexist', 'fact' : fact}
 
 
     # Visit a parse tree produced by PromiseParser#factId.

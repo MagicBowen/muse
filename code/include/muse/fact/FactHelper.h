@@ -32,7 +32,6 @@ struct BASE_FACT(FACT) : BASE                       \
                        , Preds<PRED_T>              \
 {                                                   \
     using BASE::BASE;                               \
-protected:                                          \
     using PredArgType = PRED_T;                     \
 private:                                            \
     NAME_FUNC(FACT)                                 \

@@ -1,4 +1,4 @@
-#include <stubs/include/event/EventGenerator.h>
+#include <fakefact/include/event/EventGenerator.h>
 #include <muse/base/StdExt.h>
 
 MUSE_NS_BEGIN

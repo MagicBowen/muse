@@ -1,6 +1,6 @@
 project/build
-project/.cproject
-project/.project
-project/.settings/
+code/.cproject
+code/.project
+code/.settings/
 dsl/build
 dsl/py-syntax/__pycache__

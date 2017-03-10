@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
 #include <muse/dsl/PromiseDsl.h>
-#include <stubs/include/event/EventGenerator.h>
-#include <stubs/include/runner/PromiseRunner.h>
-#include <stubs/include/fact/Collision.h>
-#include <stubs/include/fact/Distance.h>
-#include <stubs/include/fact/Stop.h>
-#include <stubs/include/fact/Duration.h>
-#include <stubs/include/event/FakeEvent.h>
-#include <stubs/include/pred/LessThan.h>
-#include <stubs/include/pred/GreaterThan.h>
-#include <stubs/include/pred/EqualTo.h>
+#include <fakefact/include/event/EventGenerator.h>
+#include <fakefact/include/runner/PromiseRunner.h>
+#include <fakefact/include/fact/Collision.h>
+#include <fakefact/include/fact/Distance.h>
+#include <fakefact/include/fact/Stop.h>
+#include <fakefact/include/fact/Duration.h>
+#include <fakefact/include/event/FakeEvent.h>
+#include <fakefact/include/pred/LessThan.h>
+#include <fakefact/include/pred/GreaterThan.h>
+#include <fakefact/include/pred/EqualTo.h>
 #include <muse/listener/PromiseListener.h>
 
 USING_MUSE_NS;

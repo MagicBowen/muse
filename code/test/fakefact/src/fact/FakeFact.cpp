@@ -1,5 +1,5 @@
-#include <stubs/include/fact/FakeFact.h>
-#include <stubs/include/event/FakeEvent.h>
+#include <fakefact/include/fact/FakeFact.h>
+#include <fakefact/include/event/FakeEvent.h>
 #include <muse/base/log.h>
 
 using muse::FakeFact;

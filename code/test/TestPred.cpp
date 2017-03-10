@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <muse/pred/Compose.h>
 #include <muse/pred/NotPred.h>
-#include <stubs/include/pred/Between.h>
-#include <stubs/include/algo/Variance.h>
+#include <fakefact/include/pred/Between.h>
+#include <fakefact/include/algo/Variance.h>
 
 USING_MUSE_NS;
 

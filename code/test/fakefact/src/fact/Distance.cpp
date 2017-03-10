@@ -1,5 +1,5 @@
-#include <stubs/include/fact/Distance.h>
-#include <stubs/include/event/FakeEvent.h>
+#include <fakefact/include/fact/Distance.h>
+#include <fakefact/include/event/FakeEvent.h>
 #include <sstream>
 
 MUSE_NS_BEGIN

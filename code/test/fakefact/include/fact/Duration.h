@@ -2,7 +2,7 @@
 #define H106C811B_25AE_4E37_8338_3299DADF6841
 
 #include <muse/fact/FactHelper.h>
-#include <stubs/include/fact/FakeFact.h>
+#include <fakefact/include/fact/FakeFact.h>
 
 MUSE_NS_BEGIN
 

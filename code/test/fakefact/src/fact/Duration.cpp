@@ -1,4 +1,4 @@
-#include <stubs/include/fact/Duration.h>
+#include <fakefact/include/fact/Duration.h>
 #include <sstream>
 
 MUSE_NS_BEGIN
