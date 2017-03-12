@@ -39,13 +39,6 @@ namespace
             index = 0;
         }
 
-        template<typename T, typename ...PS>
-        T* create(PS&& ...ps)
-        {
-            return new (alloc(sizeof(T))) T(std::forward<PS>(ps)...);
-        }
-
-    private:
         void* alloc(size_t size)
         {
             size_t alignSize = getAlignSize(size);
@@ -60,6 +53,7 @@ namespace
             return memory + allocIndex;
         }
 
+    private:
         size_t getAlignSize(size_t size) const
         {
             return size - (size % ALIGN_SIZE) + ALIGN_SIZE;
@@ -72,7 +66,11 @@ namespace
         unsigned char memory[MEM_SIZE];
     };
 
-    #define ALLOC(...) Allocator::getInstance().create<__VA_ARGS__>
+    template<typename T, typename ...PS>
+    T* create(PS&& ...ps)
+    {
+        return new (Allocator::getInstance().alloc(sizeof(T))) T(std::forward<PS>(ps)...);
+    }
 
     Promise* createPromise(const Value&);
 
@@ -99,15 +97,15 @@ namespace
     template<typename ALGO, typename PRED_PARAM, typename PRED>
     Pred<PRED_PARAM>* createComposePred(PRED* pred)
     {
-        auto algo = ALLOC(ALGO)();
-        auto composed = ALLOC(Compose<ALGO, PRED>)(*algo, *pred);
-        return ALLOC(PredAdapter<Compose<ALGO, PRED>, PRED_PARAM>)(*composed);
+        auto algo = create<ALGO>();
+        auto composed = create<Compose<ALGO, PRED>>(*algo, *pred);
+        return create<PredAdapter<Compose<ALGO, PRED>, PRED_PARAM>>(*composed);
     }
 
     template<typename PRED_PARAM, typename PRED>
     Pred<PRED_PARAM>* createAlgoPred(PRED* pred, const char* algo)
     {
-        if(algo == nullptr) return ALLOC(PredAdapter<PRED, PRED_PARAM>)(*pred);
+        if(algo == nullptr) return create<PredAdapter<PRED, PRED_PARAM>>(*pred);
         if(isAlgo(algo, "average")) return createComposePred<Average<PRED_PARAM>, PRED_PARAM>(pred);
         if(isAlgo(algo, "variance")) return createComposePred<Variance<PRED_PARAM>, PRED_PARAM>(pred);
 
@@ -118,14 +116,14 @@ namespace
     template<typename PRED, typename PRED_PARAM>
     Pred<PRED_PARAM>* create1ParamPred(const Value& json, const char* algo)
     {
-        auto pred = ALLOC(PRED)(PRED_PARAM(json["param"].GetDouble()));
+        auto pred = create<PRED>(PRED_PARAM(json["param"].GetDouble()));
         return createAlgoPred<PRED_PARAM>(pred, algo);
     }
 
     template<typename PRED, typename PRED_PARAM>
     Pred<PRED_PARAM>* create2ParamPred(const Value& json, const char* algo)
     {
-        auto pred =  ALLOC(PRED)( PRED_PARAM(json["param"][0].GetDouble())
+        auto pred =  create<PRED>( PRED_PARAM(json["param"][0].GetDouble())
                                 , PRED_PARAM(json["param"][1].GetDouble()));
         return createAlgoPred<PRED_PARAM>(pred, algo);
     }
@@ -174,18 +172,18 @@ namespace
 
     Fact* createCollisionFact(const Value& json)
     {
-        return ALLOC(Collision)();
+        return create<Collision>();
     }
 
     Fact* createStopFact(const Value& json)
     {
-        return ALLOC(Stop)();
+        return create<Stop>();
     }
 
     template<typename FACT>
     FACT* createConcreteFact(const Value& json)
     {
-        return ALLOC(FACT)();
+        return create<FACT>();
     }
 
     template<typename FACT>
@@ -196,7 +194,7 @@ namespace
             ERR_LOG("Fact lost construction parameter");
             return nullptr;
         }
-        return ALLOC(FACT)(typename  FACT::PredArgType (json["param"].GetDouble()));
+        return create<FACT>(typename  FACT::PredArgType (json["param"].GetDouble()));
     }
 
     template<typename FACT>
@@ -259,7 +257,7 @@ namespace
 
         if(json.HasMember("closure") && json["closure"].GetBool())
         {
-            return ALLOC(ClosureFact)(*fact);
+            return create<ClosureFact>(*fact);
         }
         return fact;
     }
@@ -273,7 +271,7 @@ namespace
             return nullptr;
         }
         Fact* fact = createFact(json["fact"]);
-        return ALLOC(PROMISE)(*fact);
+        return create<PROMISE>(*fact);
     }
 
     Promise* createExistPromise(const Value& json)
@@ -292,7 +290,7 @@ namespace
         const Value& value = json["promises"];
         Promise* promise = createPromise(value[0]);
         Promise* decorator = createPromise(value[1]);
-        return ALLOC(PROMISE)(*decorator, *promise);
+        return create<PROMISE>(*decorator, *promise);
     }
 
     Promise* createDaemonPromise(const Value& json)
@@ -309,7 +307,7 @@ namespace
     Promise* createCompositePromise(const Value& json)
     {
         const Value& value = json["promises"];
-        CompositePromise* promise = ALLOC(PROMISE)();
+        CompositePromise* promise = create<PROMISE>();
         for(SizeType i = 0; i < value.Size(); i++)
         {
             auto p = createPromise(value[i]);
