@@ -1,9 +1,9 @@
 #!/bin/bash
 
-gtest_root_path="/Users/wangbo/codes/googletest"
+gtest_home_path="/Users/wangbo/codes/googletest"
 
-if [ ! -d ${gtest_root_path} ]; then
-   echo "gtest path ${gtest_root_path} is not exist, please install gtest and modify the build.sh..."
+if [ ! -d ${gtest_home_path} ]; then
+   echo "gtest path ${gtest_home_path} is not exist, please install gtest and modify the build.sh..."
    exit 0
 fi
 
@@ -17,7 +17,7 @@ echo "**************************************************************************
 echo "start to build cmake project..."
 
 
-cmake -DGTEST_ROOT=${gtest_root_path} ../../code
+cmake -DGTEST_HOME=${gtest_home_path} ../../code
 cmake --build .
 
 if [ $? -ne 0 ]; then

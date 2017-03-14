@@ -4,9 +4,9 @@ set(PROJECT_NAME "test_muse")
 project(${PROJECT_NAME})
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}"
-                    "${GTEST_ROOT}/include")
+                    "${GTEST_HOME}/include")
 
-link_directories("${GTEST_ROOT}/lib")                  
+link_directories("${GTEST_HOME}/lib")                  
 
 file(GLOB_RECURSE all_files
 *.cpp
