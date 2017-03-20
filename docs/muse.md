@@ -466,18 +466,110 @@ struct Fact
 
 ![](pics/decouple-event.png)
 
-在core domain内部，无论是Promise还是Fact都使用了动态多态，所以需要使用指针。对于指针指向对象的内存如何管理是C\++绕不开的设计。不过我们建议最好不要在domain层假设客户的内存使用方式。领域对象最好只声明自己依赖谁而不耦合依赖方的内存管理方式，所以不要过早地使用智能指针。我们在实现core domain时，对依赖的抽象类型使用的尽量是引用或者裸指针，我们把内存管理尽量推迟到外部组合它们的时候由客户代码决策。而至于客户代码是要重载new还是使用专门的allocator，是使用静态内存还是动态内存抑或堆栈内存，都由客户根据自己的使用场景来决策，领域层代码对此是无感知的。
+如上图，虽然Client Domain和Core Domain是同步接口调用关系，但是我们通过抽象实现了依赖隔离。Core Domain使用Event和Fact的抽象，而Client Domain实现抽象，最终两者都依赖于更稳定的抽象。
 
-通过下一节我们将会看到，我们在构造两种DSL时使用了不同的内存管理方式，而领域层代码对此完全不关心。
+最后我们来看看内存管理。在core domain内部，无论是Promise还是Fact都使用了动态多态，所以需要使用指针。对于指针指向对象的内存如何管理是C\++绕不开的设计。不过我们建议最好不要在domain层过早假设客户的内存使用方式。领域对象最好只声明自己依赖谁而不耦合对方的内存管理方式，所以建议是不要过早地使用智能指针。我们在实现core domain时，对依赖的抽象类型使用的尽量是引用或者裸指针，我们把内存管理尽量推迟到外部组合它们的时候由客户代码决策。而至于客户代码是要重载new还是使用专门的allocator，是使用静态内存、动态内存抑或堆栈内存，是使用unique_ptr还是shared_ptr，都由客户根据自己的使用场景来决策，领域层代码对此是无感知的。
+
+通过下一节我们将会看到，我们构造的两种DSL对领域对象使用了不同的内存管理方式，而领域层代码对此完全不关心。
 
 ## DSL
 
+当你能够良好地使用组合式设计，最后总会得到分类好的代码元素，它们需要以某种设计好的模式进行组合才能进行工作。一般情况下，对这种组合工作应用一些Factory或者Builder模式，提供良好的API就足够了。但是某些场景下，我们需要设计一种领域专用语言，来提供更好的描述方式。Martin Fowler在DSL一书中总结道，DSL只是领域模型表面的一层封装而已，核心还是领域模型。所以一开始我们就一直把重点放在领域模型的演进上。虽然说领域模型是核心，但并不保证有了领域模型就一定可以设计好DSL。一方面可能由于领域元素的组合模式并不明显导致难以规律化，另一方面DSL设计确实也需要一些专门的技术。
+
+对于前面我们设计的断言系统，我们最终需要提供给用户一套DSL，让用户使用DSL来描述断言，而我们根据用户描述的断言内容来选择合适的模型元素进行组合，以完成每条断言对应的功能。
+
 ### 内部DSL
+
+为了方便对模型进行独立测试，我们首先构建了一套内部DSL。在我们的设计中，一条用户断言可能需要选择不同的Promise、Fact、Predicate和Algorithm的元素进行组合，事实上这些元素如何组合通过模型早已确定下来了（见前面的类图），DSL只是对这一确定的组合模式选择一种描述方式而已。
+
+内部DSL的构建方式Martin Fowler进行了详尽的总结：连贯接口、函数嵌套、方法级联、闭包、宏...，C++语言支持所有这些方式。由于我们的内部DSL用于对模型进行自测，所以一个用户断言定义在一个测试方法内，离开这个测试方法，断言也就无用了。在这种情况下，所有组成断言的元素直接生成在测试函数的栈内存上是最方便的。
+
+~~~cpp
+auto promise = __con(__not_exist(Collision),
+                     __seq( __exist(__fact(Stop))
+                          , __exist(__fact(Distance).predOf(LessThan<double>(5)))));
+~~~
+
+如上所示，它的含义如下：
+
+- 测试中不希望出现碰撞
+- 期望车停下来，然后它和前方物体的距离小于5m
+
+上述DSL描述的组装方式和下面的代码是一致的：
+
+~~~cpp
+Collision collision;
+NotExist promise1(collision);
+
+Stop stop;
+Exist promise2(Stop);
+
+LessThan<double> less(5);
+Distance distance;
+distance.addPred(less);
+Exist promise3(distance);
+
+Sequential seq;
+seq.addPromise(promise2);
+seq.addPromise(promise3);
+
+Concurrent con;
+con.addPromise(promise1);
+con.addPromise(seq);
+~~~
+
+首先我们的每个元素使用的是函数栈上的临时内存，得益于我们领域层分离了对内存管理方式的假设，领域对象无需关系是否需要自己delete内存。其次我们看到，使用DSL来描述组合关系更加的紧凑和连贯，对象的组合关系天生的和一颗构造树映射，而非DSL的构造代码则显得有些碎片化。
+
+![](pics/inner-dsl.png)
+
+在这套内部DSL我们使用的是函数级联，所以做到了让对象的内存直接产生于函数栈上。另外使用了一些模板来帮忙做类型推断，感兴趣的话可以直接看代码。
 
 ### 外部DSL
 
-#### XML、JSON算吗？
+外部DSL是我们真正提供给外部用户描述断言的接口。对于如何实现外部DSL，我们有更多选择性，例如我们可以选择让用户使用XML或者JSON之类的文本标记语言来描述。很容易把上面例子中的断言用一段XML或者JSON描述出来，因为XML或者JSON天生的树状结构很适合用来做这事，但是我们会发现这种借助已有标记语言的描述里面有太多不友好的语法噪音。
 
-## 演进式设计
+如果往另一个方向走，我们期望用户能够以一种类似自然语言的方式进行描述。但要警惕这条路不能走的太过头，因为自然语言是不严谨的，放任用户的描述方式，只会让自己陷入来回补洞的尴尬境地。
+
+对于本例我们希望创造一种尽量减少噪音的形式化语法，专门用来表述断言。然后针对这门语法我们写一个小小的解释器，将用户的描述翻译到C\++领域模型的组装上去。
+
+以下是使用我们创造的外部DSL描述的一条断言：
+
+![](pics/out-dsl.png)
+
+如上，第一行我们声明了一个Fact，我们给它起名`in target lane`，它的含义是“车在第2车道上”。第二行我们声明了一个断言，这里使用的是`promise`关键字，断言里面借用了一些形象的符号来表示promise之间的关系， `&&`表示concurrent， `->`表示sequential， `-|`表示until。断言里面对于简单的Fact可以直接使用，例如Collision，Stop，还可以引入前面已经声明的具名fact（例如 in_target_lane）。如果在fact的名字前加`!`则表示期望`NotExist`，否则表示`Exist`。
+
+了解了规则，那么下面这条断言什么意思，能直接看出来吗？
+
+![](pics/out-dsl2.png)
+
+对于外部DSL的实现我们使用了[antlr4](https://github.com/antlr/antlr4)。Antlr是一个开源语法分析器，借助它可以轻松地为你自己设计的语言开发语法解释器。使用antlr提供的规则描述你的语法，antlr会根据需求自动为你生成语法分析器的目标语言代码。
+
+如下是我们使用antlr描述的外部DSL的语法的主要部分，稍微熟悉编译原理的同学应该不难理解这段描述。
+
+~~~
+factdef  :   ID ':' fact END;
+
+fact     :   sfact
+         |   pfact
+         ;
+
+sfact    : 'collision'                    # collisionFact
+         | 'stop'                         # stopFact
+         ;
+
+pfact    : pfname 'predicate that' algo? pred ;
+
+promisedef  : 'promise' ':' promise END;
+
+promise  :   promise '&&' promise         # concurrent
+         |   promise '||' promise         # optional
+         |   promise '->' promise         # sequential
+         |   promise '-|' promise         # until
+         |   '!' basepromise              # notExist
+         |   basepromise                  # exist
+         |   '(' promise ')'              # parens
+~~~
+
+为了让语法错误的检查更加靠前，
 
 ## 总结
