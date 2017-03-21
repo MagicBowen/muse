@@ -1,134 +1,133 @@
 # muse：promise based assertion framework
 
-领域驱动设计（DDD）旨在软件设计过程中提炼领域模型，以领域模型为核心衔接领域和软件。领域驱动设计让面向对象的分析和设计进入了一个新的阶段，对企业级软件开发起到了巨大的推动作用。遗憾的是市面上关于领域驱动设计的书和例子使用的都是偏向应用侧的编程语言，如java、python等。下面以一个改编简化过的真实案例，和大家讨论一下如何使用C\++语言进行DDD设计。
+领域驱动设计（DDD）旨在软件设计过程中提炼领域模型，以领域模型为核心改善业务专家和软件开发者的沟通方式，对企业级软件开发起到了巨大的推动作用。遗憾的是市面上关于领域驱动设计的书和例子使用的都是偏向应用侧的编程语言，如java、python等。下面以一个改编简化过的真实案例，和大家讨论一下如何使用C\++语言进行DDD设计。
 
 ## 问题
 
 假设有一个智能电子玩具生产商，他们最新一代电动智能玩具汽车具有如下一些新功能：
 
-- 可以通过遥控器设定玩具汽车沿着地面某条车道线行驶
-- 可以根据遥控器的控制进行车道变换
-- 行驶过程中如果发现前方有静止物体阻挡则会自动停车
-- 行驶过程中如果发现前方有同方向低速移动物体则会自动跟随
-- 其它特性
+- 可以通过遥控器设定玩具汽车沿着游戏场地的某条车道线行驶
+- 玩具汽车可以根据遥控器的控制进行车道变换
+- 玩具汽车在行驶过程中如果发现前方有静止物体阻挡则会自动停车
+- 玩具汽车在行驶过程中如果发现前方有同方向低速移动物体则会自动跟随
 
-生产商已经有一套半自动测试环境用来对玩具汽车做测试。测试人员可以在电脑主机上提前编辑好对玩具汽车的遥控指令，然后通过无线网络对实验场地上的玩具汽车下发这串控制指令。而玩具汽车在行驶过程中会每隔100ms将自身状态通过无线网络上报给服务器，信息内容包含玩具车上各种传感器获取到的实时信息，例如当前的车速、和车道中心线的偏移距离以及和正前方物体的间距、是否发生碰撞等等。测试人员通过观察玩具汽车的行驶状态以及分析收集上来的消息log，人工判断每次测试车辆的行驶是否符合预期。
+生产商已经有一套半自动测试环境用来对玩具汽车做测试。测试人员可以在电脑主机上提前编辑好对玩具汽车的遥控指令，然后通过无线网络对实验场地上的玩具汽车进行指令下发。玩具汽车在行驶过程中会每隔100ms将车上所有传感器的实时信息通过无线网络上报给服务器，内容包含当前的车速、所在车道ID、和车道中心线的偏移距离、和正前方最近物体的间距、以及是否发生了碰撞等等。测试人员通过观察玩具汽车的行驶状态以及分析收集上来的消息log，人工判断每次测试中车辆的行驶是否符合预期。
 
-现在生产商想要开发一套断言系统，可以让测试人员来描述每个测试用例期望的玩具汽车行驶状态，然后断言系统在测试过程中会根据玩具汽车上报的状态消息实时判断汽车的运行状态和预期是否一致。
+现在生产商想要开发一套断言系统，用来替代原来的人工结果分析。生产商希望有了这套系统后，测试人员只用通过测试用例描述车辆在每个测试用例中期望的关键行驶行为。自动化测试系统负责执行测试用例，在测试过程中不断接受玩具汽车上报的状态信息，然后交给断言系统实时判断车辆行驶行为是否和断言描述一致。
 
 ![](pics/testenv.png)
 
-如上图所示，这套断言系统将被集成到原有的测试系统上，最终运行在同一台server上。至于如何遥控汽车和接收汽车的状态信息，不是我们的关注点。我们把重点放在实现这套断言系统上。这里选择使用C\++语言来实现，或许是为了更容易与原来的C\++系统进行集成，或许是考虑到计算的实时性和性能等原因。但无论如何现在让我们开始把关注点放到对断言系统的设计和实现上。
+如上图所示，这套断言系统将被集成进原有的测试系统，最终运行在同一台server上。至于如何遥控汽车和接收汽车的状态信息，不是断言系统的关注点。现在我们选择使用C\++语言来实现这套断言系统，一方面是为了更容易与原来的C\++系统进行集成，另外也是考虑到了计算的实时性和性能等原因。但无论如何现在开始我们把关注点放到对断言系统的设计和实现上。
+
 
 ## 领域建模
 
-### 初始模型
+### 面向对象
 
-我们先来看断言系统的边界。
+实现系统得先要定义系统的边界。断言系统的边界如下：
 
 1. 系统需要提供一套DSL（领域专有语言），供玩具车测试人员来描述断言。
 2. 系统会不断接收车辆状态消息。
-3. 系统会根据车辆状态，实时进行断言判断，最终输出断言成功或者失败的信息。
+3. 系统会接收车辆状态消息，实时进行断言判断，最终输出断言结果：成功或者失败。
 
 ![](pics/system-bound.png)
 
-虽然给测试人员提供用来描述断言的DSL非常关键，但是[Martin Fowler](https://martinfowler.com/)在《[Domain-Specific Languages](https://martinfowler.com/books/dsl.html)》一书中明确说了，DSL只是对领域模型的一层封装而已，应该先有领域模型然后有DSL。所以这里我们先不着急设计DSL，我们先把核心放到领域建模上。
+虽然提供用来描述断言的DSL非常关键，但是[Martin Fowler](https://martinfowler.com/)在《[Domain-Specific Languages](https://martinfowler.com/books/dsl.html)》一书中明确说了，DSL只是对领域模型的一层封装而已，应该先有领域模型然后有DSL。所以这里我们先不着急设计DSL，我们先把核心放到领域建模上。
 
-领域驱动开发强调使用领域模型来反映对领域本质的理解。针对要解决的问题，对领域进行抽象，提炼出核心领域概念和关系，围绕这组抽象可以去简单自洽地解决问题。
+领域驱动开发强调使用领域模型来反映对领域本质的理解。针对要解决的问题，对领域进行抽象，提炼出核心领域概念和关系，最终围绕这组抽象去简单自洽地解决问题。
 
-因此我们拿到优先级最高的两个需求，我们期望至少模型可以解决这两个需求，然后根据新的需求在逐步演进模型。
+因此我们从问题出发，先看优先级最高的两个需求。我们采用演进式设计，随着增加需求迭代地演进模型。
 
 - 可以断言车辆在测试过程中没有发生过碰撞
 - 可以断言车辆没有发生过变道
 
-这时熟悉面向对象设计的同学能立即想到的一个设计就是实现一个`Vehicle`类，用来在软件中映射现实世界中的玩具汽车。Vehicle的对象可以一直接收车辆状态消息并存储断言关注的信息，随后提供接口供断言判断。
+对于上面两个需求，熟悉面向对象设计的同学能立即想到的一个设计就是实现一个`Vehicle`类，用来在软件中映射现实世界中的玩具汽车。Vehicle的对象可以一直接收车辆状态消息并存储断言关注的信息，随后提供接口供断言判断。
 
-针对上面的系统边界，对于2我们已知车辆状态消息格式如下，Vehicle需要有一个处理该消息的接口。
+玩具汽车每隔100ms上报的状态消息内容是已知的（如下），Vehicle类需要有一个处理该消息的接口。
 
 ~~~cpp
-// every 100ms vehicle state msg
 struct VehicleInfoEvent
 {
-    int id;            // unique ID for each vehicle
-    bool collision;    // if true : vehicle is in collision
-    int  laneId;       // current lane id of vehicle
-    double speed;      // current speed of vehicle, unit : m/s
-    double distance;   // current distance to the first object ahead, unit: m
+    int id;              // 玩具汽车的唯一编号
+    bool collision;      // 是否碰撞
+    int  laneId;         // 当前所在的车道ID
+    double speed;        // 当前车速（m/s）
+    double laneGap;      // 和车道中心线的偏移距离（m）
+    double distance;     // 和前方最近物体的距离（m）
     // ...
 };
 ~~~
 
-同时Vehicle需要有接口用来判断断言是否成功。现在根据需求有两种断言，所以针对性地Vehicle提供两个用于判断的接口，用来查询对应的断言状态。
+为了实现第一个需求，Vehicle只要把消息中车辆是否碰撞的信息存下来即可。实现第二个需求，Vehicle需要记录住车辆所在的车道ID，然后每次收到消息后判断该ID是否发生过变化。最后Vehicle提供两个用于判断的接口，用来供客户代码查询对应的断言结果。
 
 ~~~cpp
 struct Vehicle
 {
     void processEvent(const VehicleInfoEvent&);
-    bool hasCollisionOccured() const;
+    bool hasCollisionOccurred() const;
     bool hasLaneChanged() const;
 
 private:
-    int id;
-    bool collisionOccured{false};
+    bool collisionOccurred{false};
     bool laneChanged{false};
-    // other vehicle state
+    int currentLaneId{INVALID_ID};
 };
 
 ~~~
 
-有了Vehicle之后，我们每收到一条玩具汽车上报的状态消息后，就交给它的`processEvent`去处理，然后再调用对应的判断接口`hasCollisionOccured`或`hasLaneChanged`，看车辆是否发生了撞击或者变道。
+测试系统每收到一条玩具汽车上报的状态消息，就调用Vehicle的`processEvent`接口去处理，然后再调用`hasCollisionOccurred`或者`hasLaneChanged`，看车辆是否发生了撞击或者变道。
 
-上述设计似乎已经很简单地解决了问题，因为面向对象告诉过我们有了对象就能容易地映射现实事物，对现实进行建模。
+上述设计已经简单有效地解决了问题。面向对象告诉过我们有了对象就能容易地映射现实事物，对问题域进行建模，看上去确实如此！
 
 可是当我们观察Vehicle类，至少发现它有如下一些问题：
 
-- Vehicle里的接口和属性是分属于不同的断言的，而现在却耦合在一个类里面。假如用户只断言了“没有发生过碰撞”，但事实上Vehicle却要负责携带和“是否变道”相关的接口和属性。
-- 虽然不同断言是独立的，但是目前对不同断言的修改，都得在Vehicle内进行。
+- Vehicle里的接口和属性是分属于两个不同的断言的，现在却耦合在一个类里面。假如用户只断言了“没有发生过碰撞”，事实上Vehicle却要负责携带和“是否变道”相关的接口和属性。
+- 断言之间是互相独立的，但是目前对任何一个断言的修改，都得在Vehicle一个类内进行。
 - 随着断言的增加，Vehicle势必变成上帝类。
 
-虽然面向对象可以很容易地对现实进行建模，可绝不是刻板地映射现实。实践告诉我们对现实进行直接建模得到的模型往往是浅薄，不深刻的，这种模型对解决问题来说往往也是脆弱的。优秀的设计得要分离变化方向，让软件的修改独立可控。所以设计模式中才会出现了Stategy，State，Oberver...。而领域驱动设计则告诉我们要把这些为了更好应对变化的代码元素进行区别，把能够反映领域知识的拿到领域模型中来，给它们好的名字，让它们变成软件对领域深入理解的表达。
+> 虽然面向对象可以很容易地对现实进行建模，可绝不是刻板地映射现实。实践告诉我们对现实进行刻板地、缺乏抽象的建模往往只能得到脆弱和缺乏弹性的模型。优秀的设计实践告诉我们需要分离变化方向，让每个变化方向上的修改独立可控。这就是为什么设计模式中会出现Strategy，Oberver，Decorator这些和现实领域无关的词。而领域驱动设计则告诉我们要把这些为了更好应对变化的代码元素进行区分，把能够反映领域知识的拿到领域模型中来，给它们好的名字，让它们变成软件对领域深入理解的表达。
 
 分析上面的Vehicle类会发现它的最大问题就在于把面向不同断言的接口和数据耦合在了一起。为此，我们需要将其进行拆分，将属于不同断言的数据和接口分离开到不同的类中，这样代码后续对某个断言的修改就不会影响到其它断言。因此我们的领域模型需要有新的概念，这里我们起名`Validator`。
 
 ~~~cpp
-struct Validitor
+struct Validator
 {
     virtual void onEvent(const VehicleInfoEvent&) = 0;
-    virtual bool hasOccured() const = 0;
-    virtual ~Assertion(){}
+    virtual bool hasOccurred() const = 0;
+    virtual ~Validator(){}
 };
 ~~~
 
-对应每种不同的断言，需要有具体的Validitor类：
+不同的断言对应不同的具体Validator。
 
 ~~~cpp
-struct CollisionValidator : Validator
+struct Collision : Validator
 {
 private:
     void onEvent(const VehicleInfoEvent&) override;
-    bool hasOccured() const override;
+    bool hasOccurred() const override;
 
 private:
-    bool hasCollision{false};
+    bool occurred{false};
 };
 ~~~
 
 ~~~cpp
-struct LaneChangedValidator : Validator
+struct LaneChanged : Validator
 {
 private:
     void onEvent(const VehicleInfoEvent&) override;
-    bool hasOccured() const override;
+    bool hasOccurred() const override;
 
 private:
     int currentLaneId;
-    bool laneChanged;
+    bool occurred{false};
 };
 ~~~
 
-这样每种断言对一个的Validitor只会包含和自己相关的接口和属性。如果用户在测试中只声明一种断言的时候，我们就可以只用定义一种断言Validator的对象就好了。最主要的当修改某一断言只会涉及到和该断言相关的代码，新增断言只用新增加一种Validator的子类就好了。我们的系统做到了开放封闭。
+现在，我们可以为不同的断言创建不同的Validator子类对象。由于对Validator的修改是互相独立的，我们的系统做到了开放封闭。对于一个断言系统来说，它的领域概念中存在“validator”是十分合理的。
 
-最后还需要定义一个Validator的集合，用来保存测试人员声明的断言。可以把Validator的集合也看成是一种Validator，它接收车辆状态事件，将其转发给内部的每一个具体validator。它也提供一个`hasOccured`接口，当内部所有断言都成功，返回真，否则返回假。
+最后我们再定义一个Validator的集合，将客户一个测试用例中的多条断言存放在一起。为了保持领域模型接口的一致性，可以把Validator的集合也看成是一种Validator，它接收车辆状态事件，将其转发给内部的每一个具体validator。它也提供一个`hasOccurred`接口，当内部所有断言都成功时返回真，否则返回假。
 
 ~~~cpp
 struct Validators : Validator
@@ -137,28 +136,28 @@ struct Validators : Validator
     
 private:    
     void onEvent(const VehicleInfoEvent&) override;
-    bool hasOccured() const override;
+    bool hasOccurred() const override;
     
 private:
     std::list<Validator*> validators;
 };
 ~~~
 
-如上对于Validators我们使用了组合模式，它负责把用户声明的多个断言组织在一起，对外仍然呈现Validator的接口。到现在所有的概念又得到了统一。我们通过新的模型简单自洽地解决了问题。到现在`Vehicle`类已经没有剩下什么东西了，可以删除掉它。现在我们得到了一个更深刻的模型。
+如上对于Validators我们使用了组合模式，它负责把用户描述的多个断言组织在一起，对外仍然呈现Validator的接口。到现在所有的概念又得到了统一。我们通过新的模型简单自洽地解决了问题。到现在`Vehicle`类已经没有剩下什么东西了，可以删除掉它。现在我们得到了一个更深刻的模型。
 
 ![](pics/validator.png)
 
-### 演进模型
+### 挖掘领域
 
 我们又得到了新的需求：
 
 - 用户可以断言发生过变道，也可以断言没发生过变道
 - 同理用户可以断言出现过碰撞，也可以断言没发生过变道
 
-对于这两个需求的实现，直接的做法是修改每个具体的Validator类，将客户的期望存下来。每次返回bool值得时候根据客户期望做判断后返回。例如：
+对这两个需求的实现，最直接的做法是修改两个具体的Validator类，将断言中描述的是否期望的flag存下来。每次返回bool值的时候根据该flag先做判断再返回结果。例如：
 
 ~~~cpp
-struct CollisionValidator : Validator
+struct Collision : Validator
 {
     CollisionValidator(bool expectExist) : expectExist(expectExist)
     {
@@ -166,27 +165,33 @@ struct CollisionValidator : Validator
     
 private:    
     void onEvent(const VehicleInfoEvent&) override;
-    bool hasOccured() const override
+    bool hasOccurred() const override
     {
-        return expectExist == hasCollision;
+        return expectExist == occurred;
     }
 
 private:
-    bool hasCollision{false};
+    bool occurred{false};
     bool expectExist;
 
 };
 ~~~
 
-对于LaneChangedValidator，我们发现修改基本一致。这里消除重复代码，可以把重复的逻辑提到父类Validator中去。但是不要忽视重复代码，往往它们的出现相当于一个信号，告诉我们有领域概念需要被发掘。
+对于LaneChanged，修改基本一致。
 
-经过分析会发现，用户对任何一个断言事件，都可以描述为“期望发生XXX”和“不期望发生XXX”。而事件是否发生则和用户的期望无关，之和我们收到的消息状态相关。我们可以认为是否发生碰撞以及变道，是一个**事实**，而客户描述的“期望存在”或者“期望不存在”则只是一种**期望**，最后事实和期望一致说明断言成功，否则说明断言失败。
+修改结束后会发现Collision和LaneChanged中出现了重复代码。可以简单地实施重构手法，将它们中重复的逻辑上移到公共父类中去。然而站在领域驱动开发的过程中看，重复代码往往是一个信号，告诉你可能存在重要的领域概念没有被发掘出来。**不要忽视重复代码**！
 
-经过上述分析，我们修改模型如下：
+经过分析会发现断言系统主要关注车辆行驶过程中的关键事件（例如碰撞、变道等）。关键事件是否发生是从车辆上报的状态消息中进行计算得到的，是一个**事实**，不以人的主观期望而改变。而断言的撰写者对任何一个关键事件进行描述，则可能会加上“期望XX发生”，或者“期望XX不发生”。这里的**期望**则是一种主观愿望，最后事实和期望一致说明断言成功，否则说明断言失败。
+
+于是我们得到了如下结论：**一个断言由一个期望加事实组成**。
+
+现在让我们把对领域的最新认识反映到模型上来。
 
 ![](pics/expect-fact.png)
 
-可见我们对Validator中表示用户希望和表示事实情况的部分拆开了。这样Fact部分就只管判断某种具体的事实有没有发生，而Expect部分只关注用户的期望是什么，两部分组合起来是一个完整的断言判断。
+我们把原来Validator中表示用户期望和表示事实情况的两部分拆分开来。其中`Fact`表示事实，它只管根据收到的消息判断某种特定的事件有没有发生。`Expect`则描述用户的期望是什么。有两种具体的期望，`Exist`表示“期望对应的Fact存在”，而`NotExist`表示“期望对应的Fact不存在”。一个具体的Expect需要和某种Fact组合起来才能表示一个完整的断言。Expects的存在仍旧是为了把多个具体的Expect组合在一起，满足在一个测试用例里面描述多个断言。
+
+如下是代码轮廓：
 
 ~~~cpp
 struct Expect
@@ -195,7 +200,7 @@ struct Expect
     virtual ~Expect(){}
 }
 
-struct Expcects : Expect
+struct Expects : Expect
 {
     void addExpect(Expect&);
 
@@ -218,121 +223,137 @@ private:
     virtual bool evaluate(const VehicleInfoEvent& event)
     {
         fact->onEvent(event);
-        return doEvaluate(fact->hasOccured());
+        return doEvaluate(fact->hasOccurred());
     }
 
 private:
-    virtual bool doEvaluate(bool hasOccured) const = 0;
+    virtual bool doEvaluate(bool hasOccurred) const = 0;
 
 private:
     Fact& fact;
 };
 
-struct ExpectExist : ConcreteExpect
+struct Exist : ConcreteExpect
 {
     using Expect::Expect;
 private:
-    bool doEvaluate(bool hasOccured) const override
+    bool doEvaluate(bool hasOccurred) const override
     {
-        return hasOccured;
+        return hasOccurred;
     }
 };
 
-struct ExpectNotExist : ConcreteExpect
+struct NotExist : ConcreteExpect
 {
     using Expect::Expect;
 private:
-    bool doEvaluate(bool hasOccured) const override
+    bool doEvaluate(bool hasOccurred) const override
     {
-        return !hasOccured;
+        return !hasOccurred;
     }
 };
 
 struct Fact
 {
     virtual void onEvent(const VehicleInfoEvent&) = 0;
-    bool hasOccurred() const
-    {
-        return occured;
-    }
+    bool hasOccurred() const = 0；
     virtual ~Fact(){}
-    
-private:
-    bool occured{false};
 };
 
 struct Collision : Fact
 {
 private:
+    bool hasOccurred() const；
     void onEvent(const VehicleInfoEvent& event) override
     {
-        // verify if collision occured by event
+        // verify if collision occurred by event
     }
+private：
+    bool occurred{false};
 };
 
 struct LaneChanged : Fact
 {
 private:
+    bool hasOccurred() const；
     void onEvent(const VehicleInfoEvent& event) override
     {
-        // verify if lane change occured by event
+        // verify if lane change occurred by event
     }
+
+private:
+    int currentLaneId{INVALID_ID};
+    bool laneChanged{false};
 }
 ~~~
 
-以上是部分代码。可以看到我们现在有两套继承体系，一套是Expect和Fact。Fact不会关心客户是怎么期望的，只根据消息判断某一具体事实是否发生。而Expect不会关心Fact如何进行消息处理，只关心客户是如何期望的。对于任一个断言我们分别从两套素材库里面取具体的素材进行拼装组合。
+可以看到现在我们有了两套继承体系：Expect和Fact。Fact不关心客户是怎么期望的，只根据消息判断某一具体事实是否发生。而Expect不会关心Fact如何处理收到的消息，它只负责用户是如何期望的。对任一个断言我们分别从两套素材库里面取具体的素材进行拼装组合。
 
-例如用户描述“希望没有发生碰撞”但同时“希望发生了变道”，组合的代码大概如下：
+例如用户描述“期望没有发生碰撞”但同时“期望发生了变道”，组合的代码大概如下：
 
 ~~~cpp
 auto collision = new Collision();
 auto laneChanged = new LaneChanged();
-auto notExist = new ExpectNotExist(*collision);
-auto exist = new ExpectExist(*laneChanged);
+auto notExist = new NotExist(*collision);
+auto exist = new Exist(*laneChanged);
 auto expects = new Expects();
-expects->addExpect(*notexist)
+expects->addExpect(*notExist)
 expects->addExpect(*exist)
 
-// feed events to expects->evalute(event)
+// feed events to expects->evaluate(event)
 ~~~
 
-上面的代码只是示例，我们目前没有关注内存管理的问题。前面的代码中，我们在Expect中存的是Fact的引用，在Expects中存的是Expect的指针。C\++为了追求效率，把内存管理的责任留给了程序员。但我们不应该过早地把内存如何管理耦合进领域模型中。很多C\++程序员喜欢在这里使用智能指针。但是一旦使用了智能指针，就得一直使用下去，一方面大面积污染代码，另一方面使得领域对象和具体的内存管理方式耦合在了一起。领域对象尽量只关注依赖谁，而不去关心应该保存对方的shared_ptr、unique_ptr。这些问题我们尽量最后把它们留给领域层之外的其它层（例如基础设施层）去解决。
+上面的代码只是示例，我们目前还没有对领域对象最终如何进行创建和组装进行设计，也没有关注内存管理的问题。我们在Expects中对Expect的管理使用了裸指针，在ConcreteExpect中对Fact的依赖使用了引用。我们并没有在领域对象中假设用户会如何管理内存，我们尽量推迟决策，将内存管理的问题隔离到核心领域层的外面。
 
-另外通过上面示例的组合代码，我们随着代码职责的分离，代码元素会变多，导致组合过程却变复杂了。其实更准确的说，不是复杂而是繁琐。因为组合的代码一般并不难理解，只是步骤变得琐碎了而已，但是只要代码元素是易组合的，深刻地反映了领域本质，那么组合过程一般都是有规律的。对于组合拼装，面向对象一般会交给专门的Factory或者Builder去做，支持反射的语言会交给框架来帮忙做。而对于我们这个例子，我们把这件事最后留给DSL来做，而往往DSL就出现在描述领域模型繁琐但是有规律的组合过程中。
+> C\++为了追求效率，把内存管理的责任留给了程序员，但我们不应该过早地把内存如何管理耦合进领域模型中。很多最佳实践告诉C\++程序员，要尽可能使用智能指针。但是一旦使用了智能指针，就得一直使用下去，一方面容易大面积污染代码，另一方面使得领域对象和具体的内存管理方式耦合在了一起。领域对象本质上只关注依赖了谁，而不应关心应该保存对方的shared_ptr还是unique_ptr。这些问题我们尽量把它们留给领域层之外的其它层（例如基础设施层）去解决。
 
-### 再演进模型
+通过上面如何进行组合的示例代码，我们看到随着代码职责的分离，代码元素会变多，导致组合过程却变复杂了。其实更准确的说，不是变复杂而是变繁琐了。因为组合的代码一般并不难理解，只是步骤变得琐碎了而已。这没什么好诟病的，只要代码元素是易组合的，深刻地反映了领域本质，那么组合过程一般都是有规律的。对于繁琐的组合拼装，面向对象的一般做法是交给专门的Factory或者Builder去做，而支持反射的语言会交给框架来帮忙做。但对于我们这个例子，我们正是要把这件事最后留给DSL来做，往往**DSL就出现在描述领域模型繁琐但是有规律的组合过程中**。
 
-我们得到新的需求：
+### 模型演进
+
+我们又得到新的需求：
 
 - 可以断言车辆是否停止
-- 可以断言车辆停止后，车所在的车道ID等于某个值
+- 可以断言车辆停止后，车辆所在的车道ID等于某个指定值
 
-第一条需求很容易实现，再增加一种Fact，根据收到消息里的车速来判断车辆是否停止。然而对于第二条，玩具车所在的车道ID在每条消息里面都有携带，所以我们可以增加一种Fact，专门用于判断车的实时车道ID是否和预期值相同，但是这条断言要求我们的判断条件是要等到车辆停止后。
+第一条需求很容易实现，再增加一种Fact，根据收到消息里的车速来判断车辆是否停止。对于第二条需求，由于玩具车所在的车道ID在每条消息里面都有携带，所以我们同样可以增加一种Fact，专门用于判断车的实时车道ID是否和指定值相同，但是这条断言要求我们的判断条件是要等到车辆停止后。
 
-在这里我们发现一个有意思的变化，那就是断言是有前置条件的。那么另一个问题来了，在前置条件没有发生的时候，断言的状态应该是什么？
+在这里我们看到一个有意思的变化，那就是断言是有前置条件的。
 
-首先我们来解决断言的前置条件的问题。简单地可以给Expect类增加一个表示前置条件的属性，默认为空。如果有前置条件，那么先判断前置条件满足，然后再进行自身期望的判断。但是这个设计会引出一串的问题：
+我们可以简单地给Expect类增加一个表示前置条件的属性，默认为空。如果有前置条件，那么先判断前置条件满足，然后再进行自身期望的判断。但是这个设计会引出一串的问题：
 
+- 前置条件的实现和Expect类会重复，因为对于前置条件，用户同样可以描述“期望某事发生的条件”下或者“期望某事不发生的条件下”；
 - 前置条件如果还有前置条件怎么办？
-- 前置条件的判断会比较复杂，例如用户可以描述“期望某事发生“的条件下或者“期望某事不发生”的条件下；
+- 当前置条件还没有满足的情况下，我们查询一个Expect，它的状态应该是什么？
 
-通过分析，实际上我们可以发现，前置条件的本质也是对某一事实的期望，当期望被满足的时候再进行下面的一项期望判断。而且前置条件还可能再有前置条件。所以我们必须找到一种简单的模型来表示它。
+通过分析，我们发现前置条件本质上也是对某一事实的期望，当期望被满足的时候再进行下面的一项期望判断。由于前置条件还可能再有前置条件，所以我们必须找到一种简单的模型来表示它。
 
-现在我们回过头来看看前面的Expects的设计，它存储了一组Expect，这组期望之间是并行的关系，也就是说Expects收到的每一条消息需要转发给它保存的每一个Expect，然后评估每个Expect的结果。
+现在我们回过头来看看前面的Expects的设计，它存储了一组Expect，这组期望之间是**并行**的关系，也就是说Expects收到的每一条消息需要转发给它保存的每一个Expect，然后评估每个Expect的结果。
 
-现在为了应对前置条件，事实上我们需要对Expect进行新的一种组合，这种新的组合将按照用户的期望顺序进行编排，当前一个满足了，才能进行后一个的评估。这样就解决了前面的问题，前置条件同样是一个Expect，前置条件的前置条件只是排在更前面的一个Expect而已。
+现在为了应对前置条件，我们需要一种新的Expect编排方式，能够按用户的期望顺序将一组Expect进行**串行**编排，只有当前一个满足了，才能进行后一个的评估。这样就解决了前面的问题，前置条件同样是一个Expect，前置条件的前置条件只是排在更前面的一个Expect而已。
 
-那么下来还需要解决的一个问题就是在前置条件没有发生前，Expect是什么状态？之前Expect的结果是bool值，只有true和false两种值。现在如果一个Expect还没有被轮到评估，那么它还应该有第三种值，我们叫做`unknown`。
+接下来还需要解决的一个问题是：当前面的Expec还没有满足前，后面的Expect是什么状态？之前Expect的结果是bool类型，只有true和false两种值。现在如果一个Expect还没有被轮到评估，那么它还应该有第三种值，我们叫做`unknown`。到现在我们发现Expect本质上是一个对未来的预期，它接收基于时间序列的消息，只有在它对应的Fact根据消息评估出事实结果后，Expect的结果才能认为是`fixed`的，这时可以返回`SUCCESS`或者`FAILED`，其它时候都是`UNKNOWN`态。并且可以基于断言的时间关系来编排一组Expect之间的顺序，是并行还是串行。
 
-现在是时候调整模型了。每个Expect可以被想象成对未来的一个期望，它们在时间上可以串成并行的或者串行的。并行的表示同时进行评估，串行的表示前面的评估成功了才会轮到后面的。于是我们将Expect重命名成`Promise`，同样是表示期望的一个单词，但是Promise更有意思点。Promise在并发编程里往往表示对未来结果的一个句柄，你可以持有它，可以对他求值，但是在期望的未来事件没有发生前，它的状态是未知的。我们在这里借鉴了这个概念。
+![](pics/promise-result.png)
+
+现在是时候把我们最新的认知成果反映到模型上了。为了更好地表示“对未来的预期”这个概念，我们将Expect重命名成`Promise`。Promise这个概念经常被用在并发编程里，表示对未来结果的一个句柄，你可以持有它，可以对它求值，但是当对应的未来事件没有发生前，它的状态是未知的。我们在这里借鉴了这个概念。
 
 调整后的模型如下：
 
 ![](pics/promise-fact.png)
 
-我们把Expect重命名为Promise。将原来的Expects重命名为更合适的Concurrent，表示时间线上并行的期望。新增加了Sequential，用于表示时间线上串行的一组期望。而原来的NoExist和Exist则继承自名为FactPromise的基类。FactPromise可以组合进一个Fact，它实现了一个状态机，用来决定在何时返回`unknown`或者`success`,`failed`。
+原来的Expects现在被重命名为更合适的Concurrent，表示时间线上并行的期望。新增加了Sequential，用于表示时间线上串行的一组期望。原来的ConcreteExpect被重命名为FactPromise，作为基本的promise，它内部实现了一个状态机，当在waited和started状态下只返回`UNKNOWN`。只有当对应的Fact产生了结果(fix)了，或者被外界stop掉，进入stopped态后，才会返回`SUCCESS`或者`FAILED`。
 
-到现在为止，我不准备再贴代码了。代码在github上可以找到：[https://github.com/MagicBowen/muse](https://github.com/MagicBowen/muse)。接下来我们通过模型来交流，先从概念层面上看看Promise。
+![](pics/state.png)
+
+到现在为止，终于不用再贴代码了，因为现在的模型对应的代码基本上和github上的一致了。访问这里[https://github.com/MagicBowen/muse](https://github.com/MagicBowen/muse)可以找到所有源码。
+
+
+
+
+
+
+接下来我们通过模型来交流，先从概念层面上看看Promise。
 
 首先可以认为Promise是对未来的一种期望，它保存了一个对未来的断言结果。
 
@@ -372,7 +393,7 @@ Sequential也可以组合一批Promise，它们表示的是时间线上串行的
 
 现在还是让我们先回到Fact的概念上。
 
-我们之前说了Fact表示一种客观事实，和用户的期望无关。每种Fact只关心一种具体的事实，它不断地接收消息，判断对应的事实是否发生。所以Fact只有两种状态：`occured`或`not occured`。
+我们之前说了Fact表示一种客观事实，和用户的期望无关。每种Fact只关心一种具体的事实，它不断地接收消息，判断对应的事实是否发生。所以Fact只有两种状态：`occurred`或`not occurred`。
 
 ![](pics/fact.png)
 
